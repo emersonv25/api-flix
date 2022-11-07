@@ -8,11 +8,11 @@ namespace Api.MyFlix.Models
     {
         [Key]
         public int EpisodeId { get; set; }
-        public string? EpisodeKey { get; set; }
+        public string EpisodeKey { get; set; }
         public int EpisodeNum { get; set; }
-        public string? Title { get; set; }
-        public string?  Description { get; set; }
-        public string? EpisodeUrl { get; set; }
+        public string Title { get; set; }
+        public string  Description { get; set; }
+        public string EpisodeUrl { get; set; }
         public DateTime CreatedDate { get; set; } = DateTime.Now;
     }
 }

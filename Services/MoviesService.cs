@@ -22,7 +22,10 @@ namespace Api.MyFlix.Services
 
         public async Task<ActionResult<Movie?>> GetMovie(int id)
         {
-            var movie = await _context.Movie.Include(m => m.Categories).Include(m => m.Seasons).ThenInclude(s => s.Episodes).FirstOrDefaultAsync(m => m.MovieId == id);
+            var movie = await _context.Movie
+                .Include(m => m.Categories)
+                .Include(m => m.Seasons)
+                .ThenInclude(s => s.Episodes).FirstOrDefaultAsync(m => m.MovieId == id);
             return movie;
         }
 

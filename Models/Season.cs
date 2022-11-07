@@ -10,13 +10,13 @@ namespace Api.MyFlix.Models
     {
         [Key]
         public int SeasonId { get; set; }
-        public string? SeasonKey { get; set; }
+        public string SeasonKey { get; set; }
         public int Number { get; set; }
-        public List<Episode>? Episodes { get; set; }
+        public List<Episode> Episodes { get; set; }
         public DateTime CreatedDate { get; set; } = DateTime.Now;
         [ForeignKey("Movie")]
         public int MovieId { get; set; }
-        public Movie? Movie { get; set; }
+        public Movie Movie { get; set; }
 
     }
 }

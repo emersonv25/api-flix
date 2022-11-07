@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using MyFlix.Models;
+using Api.MyFlix.Models;
 using Microsoft.AspNetCore.Mvc;
-using MyFlix.Models.Object;
+using Api.MyFlix.Models.Object;
 
 
-namespace MyFlix.Services.Interfaces
+namespace Api.MyFlix.Services.Interfaces
 {
     public interface IAuthService
     {

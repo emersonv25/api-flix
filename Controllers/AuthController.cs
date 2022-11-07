@@ -1,13 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
-using MyFlix.Models;
+using Api.MyFlix.Models;
 using Microsoft.AspNetCore.Authorization;
-using MyFlix.Services;
-using MyFlix.Services.Interfaces;
-using MyFlix.Models.Object;
-using NuGet.Protocol.Plugins;
-using MyFlix.Models.Object;
+using Api.MyFlix.Services;
+using Api.MyFlix.Services.Interfaces;
+using Api.MyFlix.Models.Object;
 
-namespace MyFlix.Controllers
+namespace Api.MyFlix.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -20,11 +18,6 @@ namespace MyFlix.Controllers
             _authService = authService;
         }
 
-        /// <summary>
-        /// get the user's token
-        /// </summary>
-        /// <param name="login"></param>
-        /// <returns></returns>
         [HttpPost]
         [Route("login")]
         [AllowAnonymous]
@@ -53,11 +46,7 @@ namespace MyFlix.Controllers
             }
 
         }
-        /// <summary>
-        /// register the user
-        /// </summary>
-        /// <param name="user"></param>
-        /// <returns></returns>
+
         [HttpPost]
         [Route("register")]
         [AllowAnonymous]
@@ -108,12 +97,7 @@ namespace MyFlix.Controllers
             }
 
         }
-        /// <summary>
-        /// Edit a specific user
-        /// </summary>
-        /// <param name="username"></param>
-        /// <param name="userEdited"></param>
-        /// <returns></returns>
+
         [HttpPut]
         [Route("admin/update/{username}")]
         [Authorize(Roles = "admin")]
@@ -135,11 +119,7 @@ namespace MyFlix.Controllers
             }
 
         }
-        /// <summary>
-        /// Allows the user to edit their data
-        /// </summary>
-        /// <param name="userEdited"></param>
-        /// <returns></returns>
+
         [HttpPut]
         [Route("update")]
         [Authorize]
@@ -170,11 +150,7 @@ namespace MyFlix.Controllers
             }
 
         }
-        /// <summary>
-        /// Delete a specific user
-        /// </summary>
-        /// <param name="username"></param>
-        /// <returns></returns>
+
         [HttpDelete]
         [Route("admin/delete/{username}")]
         [Authorize(Roles = "admin")]
@@ -198,10 +174,7 @@ namespace MyFlix.Controllers
 
         }
 
-        /// <summary>
-        /// Checks if you are authenticated and returns user information
-        /// </summary>
-        /// <returns></returns>
+
         [HttpGet]
         [Route("profile")]
         [Authorize]

@@ -3,9 +3,9 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
-using MyFlix.Models;
+using Api.MyFlix.Models;
 
-namespace MyFlix.Services
+namespace Api.MyFlix.Services
 {
     public static class TokenService
     {

@@ -1,4 +1,4 @@
-﻿namespace MyFlix
+﻿namespace Api.MyFlix
 {
     public static class Settings
     {

@@ -1,7 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace MyFlix.Models
+namespace Api.MyFlix.Models
 {
     public class User
     {

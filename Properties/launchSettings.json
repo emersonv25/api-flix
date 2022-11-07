@@ -9,7 +9,7 @@
     }
   },
   "profiles": {
-    "MyFlix": {
+    "Api.MyFlix": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,

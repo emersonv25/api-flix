@@ -1,13 +1,13 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using MyFlix.Data;
-using MyFlix.Models;
-using MyFlix.Services.Interfaces;
-using MyFlix.Models.Object;
+using Api.MyFlix.Data;
+using Api.MyFlix.Models;
+using Api.MyFlix.Services.Interfaces;
+using Api.MyFlix.Models.Object;
 using Microsoft.EntityFrameworkCore;
 
-namespace MyFlix.Services
+namespace Api.MyFlix.Services
 {
     public class AuthService : IAuthService
     {

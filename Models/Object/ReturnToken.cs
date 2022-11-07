@@ -1,4 +1,4 @@
-﻿namespace MyFlix.Models.Object
+﻿namespace Api.MyFlix.Models.Object
 {
     public class ReturnToken
     {

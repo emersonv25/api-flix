@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using MyFlix.Services;
-using MyFlix.Models;
+using Api.MyFlix.Services;
+using Api.MyFlix.Models;
 
-namespace MyFlix.Data
+namespace Api.MyFlix.Data
 {
     public class AppDbContext : DbContext
     {
@@ -11,6 +11,7 @@ namespace MyFlix.Data
         }
 
         public DbSet<User> User { get; set; }
+        public DbSet<Movie> Movie { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
 
@@ -33,36 +34,41 @@ namespace MyFlix.Data
             modelBuilder.Entity<Movie>().HasKey(m => m.MovieId);
             modelBuilder.Entity<Movie>().Property(m => m.Title).IsRequired();
             modelBuilder.Entity<Movie>().HasIndex(m => m.Title).IsUnique(true);
-            modelBuilder.Entity<Movie>().Property(u => u.LaunchDate).HasMaxLength(4);
-            modelBuilder.Entity<Movie>().Property(u => u.Rating).HasMaxLength(4);
-
-
-           // modelBuilder.Entity<Movie>().HasData(getDefaultMovie());
+            modelBuilder.Entity<Movie>().HasIndex(m => m.MovieKey).IsUnique(true);
+            modelBuilder.Entity<Movie>().Property(m => m.MovieKey).IsRequired();
+            modelBuilder.Entity<Movie>().Property(m => m.ReleasedDate).HasMaxLength(4);
 
             // Season
             modelBuilder.Entity<Season>().HasKey(s => s.SeasonId);
             modelBuilder.Entity<Season>().Property(s => s.Number).IsRequired();
+            modelBuilder.Entity<Season>().HasIndex(s => s.SeasonKey).IsUnique(true);
+            modelBuilder.Entity<Season>().Property(s => s.SeasonKey).IsRequired();
             modelBuilder.Entity<Season>().HasOne(s => s.Movie).WithMany(m => m.Seasons).HasForeignKey(s => s.MovieId);
+            modelBuilder.Entity<Season>().Property(s => s.MovieId).IsRequired();
 
             // Episodes
             modelBuilder.Entity<Episode>().HasKey(e => e.EpisodeId);
-            modelBuilder.Entity<Episode>().Property(e => e.Number).IsRequired(true);
+            modelBuilder.Entity<Episode>().Property(e => e.EpisodeNum).IsRequired(true);
             modelBuilder.Entity<Episode>().Property(e => e.Title).IsRequired(true);
-            modelBuilder.Entity<Episode>().Property(e => e.VideoUrl).IsRequired(true);
+            modelBuilder.Entity<Episode>().HasIndex(s => s.EpisodeKey).IsUnique(true);
+            modelBuilder.Entity<Episode>().Property(s => s.EpisodeKey).IsRequired();
+            modelBuilder.Entity<Episode>().Property(e => e.EpisodeUrl).IsRequired(true);
 
 
         }
 
         private Movie getDefaultMovie()
         {
+
             return new Movie
             {
-                MovieId = 1,
+                MovieId = 5,
+                MovieKey = "one-piece",
                 Title = "One Piece",
                 Description = "Houve um homem que conquistou tudo aquilo que o mundo tinha a oferecer, o lendário Rei dos Piratas, Gold Roger. Capturado e condenado à execução pelo Governo Mundial, suas últimas palavras lançaram legiões aos mares. “Meu tesouro? Se quiserem, podem pegá-lo. Procurem-no! Ele contém tudo que este mundo pode oferecer!”. Foi a revelação do maior tesouro, o One Piece, cobiçado por homens de todo o mundo, sonhando com fama e riqueza imensuráveis… Assim começou a Grande Era dos Piratas!",
-                Rating = "10.0",
-                PosterUrl = "https://animesbr.biz/wp-content/uploads/2019/06/oUPzuNw6e0NBbb121odI4ncCvRv-185x278.jpg",
-                LaunchDate = "1999",
+                PosterImg = "https://animesbr.biz/wp-content/uploads/2019/06/oUPzuNw6e0NBbb121odI4ncCvRv-185x278.jpg",
+                ReleasedDate = "1999",
+                CreatedDate = DateTime.Now,
                 Categories = new List<Category>
                     {
                         new Category { CategoryId = 1, Name = "Ação" },
@@ -73,26 +79,26 @@ namespace MyFlix.Data
                     {
                         new Season
                         {
-                            SeasonId = 1,
+                            SeasonId = 5,
+                            SeasonKey = "one-piece-1-temporada",
                             Number = 1,
-                            MovieId = 1,
+                            CreatedDate = DateTime.Now,
                             Episodes = new List<Episode>
                             {
                                 new Episode
                                 {
                                     EpisodeId = 1,
-                                    Number = 1,
+                                    EpisodeKey = "one-piece-episode-1",
+                                    EpisodeNum = 1,
                                     Title = "Episódio 1 - Eu Sou Luffy! Aquele Que Será o Rei dos Piratas!",
                                     Description = "One Piece Episodio 1",
-                                    VideoUrl = "https://www.blogger.com/video.g?token=AD6v5dwXwJxeialBSirm6ZXC1R1uhvC3XloL3ex93H7Ft1KGHVLcHHvCnaD4hI7BTFFawvaf6-31cVnI5bpWTNFq4gb8broG2lwhfJkYi2AGIvTDVfBtDv0w4bfSWU_uI7KmWGpQMz3A"
+                                    EpisodeUrl = "https://www.blogger.com/video.g?token=AD6v5dwXwJxeialBSirm6ZXC1R1uhvC3XloL3ex93H7Ft1KGHVLcHHvCnaD4hI7BTFFawvaf6-31cVnI5bpWTNFq4gb8broG2lwhfJkYi2AGIvTDVfBtDv0w4bfSWU_uI7KmWGpQMz3A",
+                                    CreatedDate = DateTime.Now,
                                 }
                             }
                         }
                     }
             };
         }
-
-        public DbSet<MyFlix.Models.Movie> Movie { get; set; }
-
     }
 }

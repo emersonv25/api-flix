@@ -1,18 +1,20 @@
-using MyFlix;
-using MyFlix.Data;
-using MyFlix.Services;
-using MyFlix.Services.Interfaces;
+using Api.MyFlix;
+using Api.MyFlix.Data;
+using Api.MyFlix.Services;
+using Api.MyFlix.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddTransient<IAuthService, AuthService>();
+builder.Services.AddTransient<IMoviesService, MoviesService>();
 
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -22,7 +24,7 @@ builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new OpenApiInfo
     {
-        Title = "MyFlix",
+        Title = "Api.MyFlix",
         Version = "v1",
         Description = "API para um app de streaming",
         Contact = new OpenApiContact()
@@ -106,7 +108,8 @@ builder.Services.AddAuthentication(x =>
     };
 });
 
-
+builder.Services.AddControllers().AddJsonOptions(x =>
+                x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
 var app = builder.Build();
 
@@ -116,8 +119,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
-app.UseCors(x => x
+    app.UseCors(x => x
     .AllowAnyOrigin()
     .AllowAnyMethod()
     .AllowAnyHeader());

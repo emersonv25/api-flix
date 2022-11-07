@@ -17,7 +17,7 @@ namespace Api.MyFlix.Services
             _context = context;
 
         }
-        public async Task<User?> Login(string username, string password)
+        public async Task<User> Login(string username, string password)
         {
             var passwordCrypted = Utils.sha256_hash(password);
             var user = await _context.User.SingleOrDefaultAsync(u => u.Username == username && u.Password == passwordCrypted);
@@ -32,28 +32,28 @@ namespace Api.MyFlix.Services
 
             return newUser;
         }
-        public async Task<User?> GetByUsername(string username)
+        public async Task<User> GetByUsername(string username)
         {
             var user = new User();
             user = await _context.User.SingleOrDefaultAsync(u => u.Username == username);
 
             return user;
         }
-        public async Task<User?> GetUserByEmail(string email)
+        public async Task<User> GetUserByEmail(string email)
         {
             var user = new User();
             user = await _context.User.SingleOrDefaultAsync(u => u.Email == email);
 
             return user;
         }
-        public async Task<User?> GetUserById(int id)
+        public async Task<User> GetUserById(int id)
         {
             var user = await _context.User.FindAsync(id);
 
             return user;
         }
 
-        public async Task<User?> PutUserAdm(string username, ParamUpdateUserAdm userEdited)
+        public async Task<User> PutUserAdm(string username, ParamUpdateUserAdm userEdited)
         {
             var user = await _context.User.SingleOrDefaultAsync(u => u.Username == username);
             if (user != null)
@@ -92,7 +92,7 @@ namespace Api.MyFlix.Services
 
             return user;
         }
-        public async Task<User?> PutUser(string username, ParamUpdateUser userEdited)
+        public async Task<User> PutUser(string username, ParamUpdateUser userEdited)
         {
 
             var user = await _context.User.SingleOrDefaultAsync(u => u.Username == username);

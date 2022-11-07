@@ -6,6 +6,7 @@ namespace Api.MyFlix.Models
     [Index(nameof(EpisodeKey))]
     public class Episode
     {
+
         [Key]
         public int EpisodeId { get; set; }
         public string EpisodeKey { get; set; }

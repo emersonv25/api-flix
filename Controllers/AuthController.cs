@@ -83,7 +83,7 @@ namespace Api.MyFlix.Controllers
                     return BadRequest("Dados para o cadastro inválidos !");
                 }
 
-                User? newUser = await _authService.Register(user);
+                User newUser = await _authService.Register(user);
                 if (newUser == null)
                 {
                     return BadRequest("Não foi possivel cadastrar o usuário");
@@ -105,7 +105,7 @@ namespace Api.MyFlix.Controllers
         {
             try
             {
-                User? usuario = await _authService.PutUserAdm(username, userEdited);
+                User usuario = await _authService.PutUserAdm(username, userEdited);
                 if (usuario == null)
                 {
                     return BadRequest("Usuário não encontrado");
@@ -123,7 +123,7 @@ namespace Api.MyFlix.Controllers
         [HttpPut]
         [Route("update")]
         [Authorize]
-        public async Task<ActionResult<User?>> Put(ParamUpdateUser userEdited)
+        public async Task<ActionResult<User>> Put(ParamUpdateUser userEdited)
         {
             try
             {
@@ -135,7 +135,7 @@ namespace Api.MyFlix.Controllers
                     return Unauthorized("Falha ao identificar o usuário, favor relogar");
                 }
 
-                User? user = await _authService.PutUser(username, userEdited);
+                User user = await _authService.PutUser(username, userEdited);
                 if (user == null)
                 {
                     return BadRequest("Falha ao editar usuário");
@@ -178,7 +178,7 @@ namespace Api.MyFlix.Controllers
         [HttpGet]
         [Route("profile")]
         [Authorize]
-        public async Task<ActionResult<User?>> GetUserProfile() {
+        public async Task<ActionResult<User>> GetUserProfile() {
             var username = User.Identity.Name;
 
             if(string.IsNullOrEmpty(username))

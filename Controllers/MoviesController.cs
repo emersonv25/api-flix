@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Api.MyFlix.Data;
 using Api.MyFlix.Models;
 using Api.MyFlix.Services.Interfaces;
+using Api.MyFlix.Models.Object;
 
 namespace Api.MyFlix.Controllers
 {
@@ -23,14 +24,14 @@ namespace Api.MyFlix.Controllers
 
         // GET: api/Movies
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Movie>>> GetMovie()
+        public async Task<ActionResult<IEnumerable<ReturnMovies>>> GetMovie()
         {
             return await _moviesService.GetMovie();
         }
 
         // GET: api/Movies/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Movie?>> GetMovie(int id)
+        public async Task<ActionResult<ReturnMovie>> GetMovie(int id)
         {
             return await _moviesService.GetMovie(id);
         }

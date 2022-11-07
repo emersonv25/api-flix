@@ -15,7 +15,7 @@ namespace Api.MyFlix.Services.Interfaces
         /// <param name="username"></param>
         /// <param name="password"></param>
         /// <returns></returns>
-        Task<User?> Login(string username, string password);
+        Task<User> Login(string username, string password);
         /// <summary>
         /// register the user
         /// </summary>
@@ -27,25 +27,25 @@ namespace Api.MyFlix.Services.Interfaces
         /// </summary>
         /// <param name="username"></param>
         /// <returns></returns>
-        Task<User?> GetByUsername(string username);
+        Task<User> GetByUsername(string username);
         /// <summary>
         /// Get user by email
         /// </summary>
         /// <param name="email"></param>
         /// <returns></returns>
-        Task<User?> GetUserByEmail(string email);
+        Task<User> GetUserByEmail(string email);
         /// <summary>
         /// Get user by id
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        Task<User?> GetUserById(int id);
+        Task<User> GetUserById(int id);
         /// <summary>
         /// Allows the user to edit their data
         /// </summary>
         /// <param name="userEdited"></param>
         /// <returns></returns>
-        Task<User?> PutUser(string username, ParamUpdateUser userEdited);
+        Task<User> PutUser(string username, ParamUpdateUser userEdited);
         /// <summary>
         /// Delete a specific user
         /// </summary>
@@ -58,6 +58,6 @@ namespace Api.MyFlix.Services.Interfaces
         /// <param name="username"></param>
         /// <param name="userEdited"></param>
         /// <returns></returns>
-        Task<User?> PutUserAdm(string username, ParamUpdateUserAdm userEdited);
+        Task<User> PutUserAdm(string username, ParamUpdateUserAdm userEdited);
     }
 }

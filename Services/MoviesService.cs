@@ -1,5 +1,6 @@
 ﻿using Api.MyFlix.Data;
 using Api.MyFlix.Models;
+using Api.MyFlix.Models.Object;
 using Api.MyFlix.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -15,18 +16,37 @@ namespace Api.MyFlix.Services
             _context = context;
 
         }
-        public async Task<ActionResult<IEnumerable<Movie>>> GetMovie()
+        public async Task<ActionResult<IEnumerable<ReturnMovies>>> GetMovie()
         {
-            return await _context.Movie.Include(m => m.Categories).ToListAsync();
+            var movies = await _context.Movie.Include(m => m.Categories).ToListAsync();
+
+            var returnMovies = new List<ReturnMovies>();
+
+            if(movies != null)
+            {
+                foreach(var movie in movies)
+                {
+                    returnMovies.Add(new ReturnMovies(movie));
+                }
+            }
+
+            return returnMovies;
         }
 
-        public async Task<ActionResult<Movie?>> GetMovie(int id)
+        public async Task<ActionResult<ReturnMovie>> GetMovie(int id)
         {
             var movie = await _context.Movie
                 .Include(m => m.Categories)
                 .Include(m => m.Seasons)
                 .ThenInclude(s => s.Episodes).FirstOrDefaultAsync(m => m.MovieId == id);
-            return movie;
+
+            if(movie != null)
+            {
+               return new ReturnMovie(movie);
+            }
+
+            return new NotFoundObjectResult("Nenhum resultado encontrado");
+
         }
 
         public async Task<ActionResult> PutMovie(int id, Movie movie)

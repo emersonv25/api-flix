@@ -4,8 +4,7 @@ using Api.MyFlix.Models.Object;
 using Api.MyFlix.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
-using System.Xml.Linq;
+using System.Collections.Immutable;
 
 namespace Api.MyFlix.Services
 {
@@ -31,11 +30,10 @@ namespace Api.MyFlix.Services
                     returnMovies.Add(new ReturnMovies(movie));
                 }
             }
-
             return returnMovies;
         }
 
-        public async Task<ActionResult<ReturnMovie>> GetMovie(int id)
+        public async Task<ActionResult<ReturnMovie>> GetMovieById(int id)
         {
             var movie = await _context.Movie
                 .Include(m => m.Categories)
@@ -48,9 +46,39 @@ namespace Api.MyFlix.Services
             }
 
             return new NotFoundObjectResult("Nenhum resultado encontrado");
-
         }
+        public async Task<ActionResult<ReturnMovie>> GetMovieByKey(string key)
+        {
+            var movie = await _context.Movie
+                .Include(m => m.Categories)
+                .Include(m => m.Seasons)
+                .ThenInclude(s => s.Episodes).FirstOrDefaultAsync(m => m.MovieKey == key);
 
+            if (movie is not null)
+            {
+                return new ReturnMovie(movie);
+            }
+
+            return new NotFoundObjectResult("Nenhum resultado encontrado");
+        }
+        public async Task<ActionResult<IEnumerable<ReturnMovies>>> SearchMovie(string name)
+        {
+            name = name.Trim();
+            var movies = await _context.Movie
+                .Where(m => m.Title.Contains(name) || m.Description.Contains(name) || m.Categories.Select(c => c.Name).Contains(name))
+                .Include(m => m.Categories).ToListAsync();
+
+            var returnMovies = new List<ReturnMovies>();
+
+            if (movies is not null)
+            {
+                foreach (var movie in movies)
+                {
+                    returnMovies.Add(new ReturnMovies(movie));
+                }
+            }
+            return returnMovies;
+        }
         public async Task<ActionResult> PostMovie(ParamMovie movie)
         {
             var categories = _context.Category.Where(i => movie.Categories.Contains(i.Name.ToLower())).ToList();
@@ -128,10 +156,6 @@ namespace Api.MyFlix.Services
         private bool MovieExistsByKey(string key)
         {
             return _context.Movie.Any(e => e.MovieKey == key);
-        }
-        private bool CategoryExists(List<string> categories)
-        {
-            return _context.Category.Any(e => categories.Contains(e.Name));
         }
     }
 }

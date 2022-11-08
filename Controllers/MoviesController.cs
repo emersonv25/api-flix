@@ -9,6 +9,7 @@ using Api.MyFlix.Data;
 using Api.MyFlix.Models;
 using Api.MyFlix.Services.Interfaces;
 using Api.MyFlix.Models.Object;
+using System.Xml.Linq;
 
 namespace Api.MyFlix.Controllers
 {
@@ -30,10 +31,23 @@ namespace Api.MyFlix.Controllers
         }
 
         // GET: api/Movies/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<ReturnMovie>> GetMovie(int id)
+        [HttpGet("{id:int}")]
+        public async Task<ActionResult<ReturnMovie>> GetMovieById(int id)
         {
-            return await _moviesService.GetMovie(id);
+            return await _moviesService.GetMovieById(id);
+        }
+        // GET: api/Movies/one-piece
+        [HttpGet("{key}")]
+        public async Task<ActionResult<ReturnMovie>> GetMovieByKey(string key)
+        {
+            return await _moviesService.GetMovieByKey(key);
+        }
+
+        // GET: api/Movies/search?name=One Piece
+        [HttpGet("search")]
+        public async Task<ActionResult<IEnumerable<ReturnMovies>>> SearchMovie(string name)
+        {
+            return await _moviesService.SearchMovie(name);
         }
 
         // PUT: api/Movies/5

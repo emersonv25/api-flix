@@ -44,7 +44,7 @@ namespace Api.MyFlix.Data
 
             // Season
             modelBuilder.Entity<Season>().HasKey(s => s.SeasonId);
-            modelBuilder.Entity<Season>().Property(s => s.Number).IsRequired();
+            modelBuilder.Entity<Season>().Property(s => s.SeasonNum).IsRequired();
             modelBuilder.Entity<Season>().HasIndex(s => s.SeasonKey).IsUnique(true);
             modelBuilder.Entity<Season>().Property(s => s.SeasonKey).IsRequired();
             modelBuilder.Entity<Season>().HasOne(s => s.Movie).WithMany(m => m.Seasons).HasForeignKey(s => s.MovieId);
@@ -59,50 +59,6 @@ namespace Api.MyFlix.Data
             modelBuilder.Entity<Episode>().Property(e => e.EpisodeUrl).IsRequired(true);
 
 
-        }
-
-        private Movie getDefaultMovie()
-        {
-
-            return new Movie
-            {
-                MovieId = 5,
-                MovieKey = "one-piece",
-                Title = "One Piece",
-                Description = "Houve um homem que conquistou tudo aquilo que o mundo tinha a oferecer, o lendário Rei dos Piratas, Gold Roger. Capturado e condenado à execução pelo Governo Mundial, suas últimas palavras lançaram legiões aos mares. “Meu tesouro? Se quiserem, podem pegá-lo. Procurem-no! Ele contém tudo que este mundo pode oferecer!”. Foi a revelação do maior tesouro, o One Piece, cobiçado por homens de todo o mundo, sonhando com fama e riqueza imensuráveis… Assim começou a Grande Era dos Piratas!",
-                PosterImg = "https://animesbr.biz/wp-content/uploads/2019/06/oUPzuNw6e0NBbb121odI4ncCvRv-185x278.jpg",
-                ReleasedDate = "1999",
-                CreatedDate = DateTime.Now,
-                Categories = new List<Category>
-                    {
-                        new Category { CategoryId = 1, Name = "Ação" },
-                        new Category { CategoryId = 2, Name = "Aventura" },
-                        new Category { CategoryId = 3, Name = "Drama" },
-                    },
-                Seasons = new List<Season>
-                    {
-                        new Season
-                        {
-                            SeasonId = 5,
-                            SeasonKey = "one-piece-1-temporada",
-                            Number = 1,
-                            CreatedDate = DateTime.Now,
-                            Episodes = new List<Episode>
-                            {
-                                new Episode
-                                {
-                                    EpisodeId = 1,
-                                    EpisodeKey = "one-piece-episode-1",
-                                    EpisodeNum = 1,
-                                    Title = "Episódio 1 - Eu Sou Luffy! Aquele Que Será o Rei dos Piratas!",
-                                    Description = "One Piece Episodio 1",
-                                    EpisodeUrl = "https://www.blogger.com/video.g?token=AD6v5dwXwJxeialBSirm6ZXC1R1uhvC3XloL3ex93H7Ft1KGHVLcHHvCnaD4hI7BTFFawvaf6-31cVnI5bpWTNFq4gb8broG2lwhfJkYi2AGIvTDVfBtDv0w4bfSWU_uI7KmWGpQMz3A",
-                                    CreatedDate = DateTime.Now,
-                                }
-                            }
-                        }
-                    }
-            };
         }
     }
 }

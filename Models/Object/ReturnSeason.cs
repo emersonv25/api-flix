@@ -6,12 +6,12 @@
         public ReturnSeason(Season season)
         {
             SeasonKey = season.SeasonKey;
-            Number = season.Number;
+            SeasonNum = season.SeasonNum;
             Episodes = season.Episodes.Select(x => new ReturnEpisode(x)).ToList();
         }
 
         public string SeasonKey { get; set; }
-        public int Number { get; set; }
+        public int SeasonNum { get; set; }
         public List<ReturnEpisode> Episodes { get; set; }
     }
 }

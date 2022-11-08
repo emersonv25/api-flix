@@ -53,31 +53,25 @@ namespace Api.MyFlix.Services
 
         public async Task<ActionResult> PostMovie(ParamMovie movie)
         {
-            var movieKey = string.IsNullOrWhiteSpace(movie.MovieKey) ? movie.Title.Trim().ToLower().Replace(' ', '-') : movie.MovieKey;
-            if(MovieExistsByKey(movieKey))
-            {
-                return new BadRequestObjectResult($"{movieKey} já existe");
-            }
-            var categories = new List<Category>();
-            if (CategoryExists(movie.Categories))
-            {
-                categories = _context.Category.Where(i => movie.Categories.Contains(i.Name)).ToList();
-            }
-            else
-            {
-                categories = movie.Categories.Select(x => new Category(x)).ToList();
-            }
+            var categories = _context.Category.Where(i => movie.Categories.Contains(i.Name.ToLower())).ToList();
+
+            var newCategories = movie.Categories.Where(c => !categories.Select(x => x.Name).Contains(c)).ToList();
+
+            categories = categories.Concat(newCategories.Select(c => new Category(c))).ToList();
 
             var newMovie = new Movie
+            (
+                movie.Title,
+                movie.Description,
+                movie.PosterImg,
+                movie.ReleasedDate,
+                movie.Seasons,
+                categories
+            );
+            if (MovieExistsByKey(newMovie.MovieKey))
             {
-                MovieKey = movieKey,
-                Title = movie.Title,
-                Description = movie.Description,
-                PosterImg = movie.PosterImg,
-                ReleasedDate = movie.ReleasedDate,
-                Seasons = movie.Seasons.Select(x => new Season(x)).ToList(),
-                Categories = categories,
-            };
+                return new BadRequestObjectResult($"{newMovie.MovieKey} já existe");
+            }
 
             _context.Movie.Add(newMovie);
             await _context.SaveChangesAsync();

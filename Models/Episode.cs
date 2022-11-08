@@ -1,4 +1,5 @@
 ﻿using Api.MyFlix.Models.Object;
+using Api.MyFlix.Services;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
@@ -15,6 +16,14 @@ namespace Api.MyFlix.Models
             Title = returnEpisode.Title;    
             Description = returnEpisode.Description;    
             EpisodeUrl = returnEpisode.EpisodeUrl;
+        }
+        public Episode(ParamEpisode paramEpisode, string movieKey)
+        {
+            EpisodeKey = $"{movieKey}-episodio-{paramEpisode.EpisodeNum}";
+            EpisodeNum = paramEpisode.EpisodeNum;
+            Title = paramEpisode.Title;
+            Description = paramEpisode.Description;
+            EpisodeUrl = paramEpisode.EpisodeUrl;
         }
 
         [Key]

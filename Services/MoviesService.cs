@@ -4,6 +4,8 @@ using Api.MyFlix.Models.Object;
 using Api.MyFlix.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using System.Xml.Linq;
 
 namespace Api.MyFlix.Services
 {
@@ -22,7 +24,7 @@ namespace Api.MyFlix.Services
 
             var returnMovies = new List<ReturnMovies>();
 
-            if(movies != null)
+            if(movies is not null)
             {
                 foreach(var movie in movies)
                 {
@@ -40,13 +42,47 @@ namespace Api.MyFlix.Services
                 .Include(m => m.Seasons)
                 .ThenInclude(s => s.Episodes).FirstOrDefaultAsync(m => m.MovieId == id);
 
-            if(movie != null)
+            if(movie is not null)
             {
                return new ReturnMovie(movie);
             }
 
             return new NotFoundObjectResult("Nenhum resultado encontrado");
 
+        }
+
+        public async Task<ActionResult> PostMovie(ParamMovie movie)
+        {
+            var movieKey = string.IsNullOrWhiteSpace(movie.MovieKey) ? movie.Title.Trim().ToLower().Replace(' ', '-') : movie.MovieKey;
+            if(MovieExistsByKey(movieKey))
+            {
+                return new BadRequestObjectResult($"{movieKey} já existe");
+            }
+            var categories = new List<Category>();
+            if (CategoryExists(movie.Categories))
+            {
+                categories = _context.Category.Where(i => movie.Categories.Contains(i.Name)).ToList();
+            }
+            else
+            {
+                categories = movie.Categories.Select(x => new Category(x)).ToList();
+            }
+
+            var newMovie = new Movie
+            {
+                MovieKey = movieKey,
+                Title = movie.Title,
+                Description = movie.Description,
+                PosterImg = movie.PosterImg,
+                ReleasedDate = movie.ReleasedDate,
+                Seasons = movie.Seasons.Select(x => new Season(x)).ToList(),
+                Categories = categories,
+            };
+
+            _context.Movie.Add(newMovie);
+            await _context.SaveChangesAsync();
+
+            return new OkObjectResult("Cadastrado com Sucesso");
         }
 
         public async Task<ActionResult> PutMovie(int id, Movie movie)
@@ -76,13 +112,6 @@ namespace Api.MyFlix.Services
 
             return new OkObjectResult("Editado com sucesso");
         }
-        public async Task<ActionResult> PostMovie(Movie movie)
-        {
-            _context.Movie.Add(movie);
-            await _context.SaveChangesAsync();
-
-            return new OkObjectResult("Cadastrado com Sucesso");
-        }
 
         public async Task<ActionResult> DeleteMovie(int id)
         {
@@ -102,6 +131,13 @@ namespace Api.MyFlix.Services
         {
             return _context.Movie.Any(e => e.MovieId == id);
         }
-
+        private bool MovieExistsByKey(string key)
+        {
+            return _context.Movie.Any(e => e.MovieKey == key);
+        }
+        private bool CategoryExists(List<string> categories)
+        {
+            return _context.Category.Any(e => categories.Contains(e.Name));
+        }
     }
 }

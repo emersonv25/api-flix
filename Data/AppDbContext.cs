@@ -12,6 +12,10 @@ namespace Api.MyFlix.Data
 
         public DbSet<User> User { get; set; }
         public DbSet<Movie> Movie { get; set; }
+        public DbSet<Category> Category { get; set; }
+        public DbSet<Season> Season { get; set; }
+        public DbSet<Episode> Espisode { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
 

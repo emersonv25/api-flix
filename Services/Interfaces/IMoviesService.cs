@@ -9,7 +9,7 @@ namespace Api.MyFlix.Services.Interfaces
         Task<ActionResult<IEnumerable<ReturnMovies>>> GetMovie();
         Task<ActionResult<ReturnMovie>> GetMovie(int id);
         Task<ActionResult> PutMovie(int id, Movie movie);
-        Task<ActionResult> PostMovie(Movie movie);
+        Task<ActionResult> PostMovie(ParamMovie movie);
         Task<ActionResult> DeleteMovie(int id);
     }
 }

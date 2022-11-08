@@ -45,7 +45,7 @@ namespace Api.MyFlix.Controllers
 
         // POST: api/Movies
         [HttpPost]
-        public async Task<ActionResult<Movie>> PostMovie(Movie movie)
+        public async Task<ActionResult<Movie>> PostMovie(ParamMovie movie)
         {
             return await _moviesService.PostMovie(movie);
         }

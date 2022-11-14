@@ -14,7 +14,7 @@ namespace Api.MyFlix.Models
         [Key]
         public int CategoryId { get; set; }
         public string Name { get; set; }
-        public List<Movie> Movies { get; set; }
+        public List<Serie> Series { get; set; }
         public DateTime CreatedDate { get; set; } = DateTime.Now;
 
     }

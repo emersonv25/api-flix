@@ -14,7 +14,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddTransient<IAuthService, AuthService>();
-builder.Services.AddTransient<IMoviesService, MoviesService>();
+builder.Services.AddTransient<ISeriesService, SeriesService>();
+builder.Services.AddTransient<IEpisodesService, EpisodesService>();
 
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

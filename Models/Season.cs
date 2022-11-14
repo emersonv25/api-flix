@@ -17,22 +17,22 @@ namespace Api.MyFlix.Models
             SeasonNum = returnSeason.SeasonNum;
             Episodes = returnSeason.Episodes.Select(e => new Episode(e)).ToList();
         }
-        public Season(ParamSeason paramSeason, string movieKey)
+        public Season(ParamSeason paramSeason, string SerieKey)
         {
-            SeasonKey = $"{movieKey}-{paramSeason.SeasonNum}-temporada-online";
-            SeasonNum = paramSeason.SeasonNum;
-            Episodes = paramSeason.Episodes.Select(e => new Episode(e, movieKey)).ToList();
+            SeasonKey = $"{SerieKey}-{paramSeason.SeasonNum}-temporada-online";
+            SeasonNum = paramSeason.SeasonNum == 0 ? 1 : paramSeason.SeasonNum;
+            Episodes = paramSeason.Episodes.Select(e => new Episode(e, SeasonNum, SerieKey)).ToList();
         }
 
         [Key]
         public int SeasonId { get; set; }
         public string SeasonKey { get; set; }
-        public int SeasonNum { get; set; }
+        public int SeasonNum { get; set; } = 1;
         public List<Episode> Episodes { get; set; }
         public DateTime CreatedDate { get; set; } = DateTime.Now;
-        [ForeignKey("Movie")]
-        public int MovieId { get; set; }
-        public Movie Movie { get; set; }
+        [ForeignKey("Serie")]
+        public int SerieId { get; set; }
+        public Serie Serie { get; set; }
 
     }
 }

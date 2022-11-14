@@ -11,7 +11,7 @@ namespace Api.MyFlix.Data
         }
 
         public DbSet<User> User { get; set; }
-        public DbSet<Movie> Movie { get; set; }
+        public DbSet<Serie> Serie { get; set; }
         public DbSet<Category> Category { get; set; }
         public DbSet<Season> Season { get; set; }
         public DbSet<Episode> Espisode { get; set; }
@@ -34,21 +34,21 @@ namespace Api.MyFlix.Data
                     new User { UserId = 1, Username = "admin", FullName = "Administrador", Password = Utils.sha256_hash("admin"), Enabled = true, Admin = true, Email = "admin@admin.com" }
                 );
 
-            // Movie
-            modelBuilder.Entity<Movie>().HasKey(m => m.MovieId);
-            modelBuilder.Entity<Movie>().Property(m => m.Title).IsRequired();
-            modelBuilder.Entity<Movie>().HasIndex(m => m.Title).IsUnique(true);
-            modelBuilder.Entity<Movie>().HasIndex(m => m.MovieKey).IsUnique(true);
-            modelBuilder.Entity<Movie>().Property(m => m.MovieKey).IsRequired();
-            modelBuilder.Entity<Movie>().Property(m => m.ReleasedDate).HasMaxLength(4);
+            // Serie
+            modelBuilder.Entity<Serie>().HasKey(m => m.SerieId);
+            modelBuilder.Entity<Serie>().Property(m => m.Title).IsRequired();
+            modelBuilder.Entity<Serie>().HasIndex(m => m.Title).IsUnique(true);
+            modelBuilder.Entity<Serie>().HasIndex(m => m.SerieKey).IsUnique(true);
+            modelBuilder.Entity<Serie>().Property(m => m.SerieKey).IsRequired();
+            modelBuilder.Entity<Serie>().Property(m => m.ReleasedDate).HasMaxLength(4);
 
             // Season
             modelBuilder.Entity<Season>().HasKey(s => s.SeasonId);
             modelBuilder.Entity<Season>().Property(s => s.SeasonNum).IsRequired();
             modelBuilder.Entity<Season>().HasIndex(s => s.SeasonKey).IsUnique(true);
             modelBuilder.Entity<Season>().Property(s => s.SeasonKey).IsRequired();
-            modelBuilder.Entity<Season>().HasOne(s => s.Movie).WithMany(m => m.Seasons).HasForeignKey(s => s.MovieId);
-            modelBuilder.Entity<Season>().Property(s => s.MovieId).IsRequired();
+            modelBuilder.Entity<Season>().HasOne(s => s.Serie).WithMany(m => m.Seasons).HasForeignKey(s => s.SerieId);
+            modelBuilder.Entity<Season>().Property(s => s.SerieId).IsRequired();
 
             // Episodes
             modelBuilder.Entity<Episode>().HasKey(e => e.EpisodeId);
@@ -56,7 +56,7 @@ namespace Api.MyFlix.Data
             modelBuilder.Entity<Episode>().Property(e => e.Title).IsRequired(true);
             modelBuilder.Entity<Episode>().HasIndex(s => s.EpisodeKey).IsUnique(true);
             modelBuilder.Entity<Episode>().Property(s => s.EpisodeKey).IsRequired();
-            modelBuilder.Entity<Episode>().Property(e => e.EpisodeUrl).IsRequired(true);
+            modelBuilder.Entity<Episode>().Property(e => e.EpisodeVideo).IsRequired(true);
 
 
         }

@@ -1,6 +1,6 @@
 ﻿namespace Api.MyFlix.Models.Object
 {
-    public class ParamMovie
+    public class ParamSerie
     {
         public string Title { get; set; }
         public string Description { get; set; }

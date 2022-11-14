@@ -2,27 +2,26 @@
 using Api.MyFlix.Services;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 
 namespace Api.MyFlix.Models
 {
-    [Index(nameof(MovieKey))]
-    public class Movie
+    [Index(nameof(SerieKey))]
+    public class Serie
     {
-        public Movie() { }
-        public Movie(string title, string description, string posterImg, string releasedDate, List<ParamSeason> seasons, List<Category> categories)
+        public Serie() { }
+        public Serie(string title, string description, string posterImg, string releasedDate, List<ParamSeason> seasons, List<Category> categories)
         {
-            MovieKey = Utils.ReplaceSpecialChar(title.ToLower()).Replace(' ', '-');
+            SerieKey = Utils.ReplaceSpecialChar(title.ToLower()).Replace(' ', '-');
             Title = title;
             Description = description;
             PosterImg = posterImg;
             ReleasedDate = releasedDate;
-            Seasons = seasons.Select(s => new Season(s, MovieKey)).ToList();
+            Seasons = seasons.Select(s => new Season(s, SerieKey)).ToList();
             Categories = categories;
         }
         [Key]
-        public int MovieId { get; set; }
-        public string MovieKey { get; set; }
+        public int SerieId { get; set; }
+        public string SerieKey { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
         public string PosterImg { get; set; }

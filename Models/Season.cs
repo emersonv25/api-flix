@@ -1,7 +1,5 @@
 ﻿using Api.MyFlix.Models.Object;
-using Api.MyFlix.Services;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -19,7 +17,7 @@ namespace Api.MyFlix.Models
         }
         public Season(ParamSeason paramSeason, string SerieKey)
         {
-            SeasonKey = $"{SerieKey}-{paramSeason.SeasonNum}-temporada-online";
+            SeasonKey = $"{SerieKey}-temporada-{paramSeason.SeasonNum}";
             SeasonNum = paramSeason.SeasonNum == 0 ? 1 : paramSeason.SeasonNum;
             Episodes = paramSeason.Episodes.Select(e => new Episode(e, SeasonNum, SerieKey)).ToList();
         }

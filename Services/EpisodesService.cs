@@ -18,11 +18,31 @@ namespace Api.MyFlix.Services
 
         public async Task<ActionResult<ReturnEpisode>> GetEpisodeByKey(string key)
         {
-            var episodes = await _context.Espisode.FirstOrDefaultAsync(m => m.EpisodeKey == key);
+            var episode = await _context.Espisode
+                .Include(s => s.Season)
+                .ThenInclude(s => s.Serie)
+                .Include(s => s.Season.Episodes)
+                .FirstOrDefaultAsync(m => m.EpisodeKey == key);
 
-            if (episodes is not null)
+            if (episode is not null)
             {
-                return new ReturnEpisode(episodes);
+                var returnEpisode = new ReturnEpisode(episode);
+                returnEpisode.SerieKey = episode.Season.Serie.SerieKey;
+                returnEpisode.SeasonKey = episode.Season.SeasonKey;
+                if(episode.Season.Episodes.Any(e => e.EpisodeNum == episode.EpisodeNum + 1))
+                {
+                    returnEpisode.NextEpisodeKey = episode.Season.Episodes
+                        .Where(e => e.EpisodeNum == episode.EpisodeNum + 1)
+                        .ToList()[0].EpisodeKey;
+                }
+                if (episode.Season.Episodes.Any(e => e.EpisodeNum == episode.EpisodeNum - 1))
+                {
+                    returnEpisode.PreviousEpisodeKey = episode.Season.Episodes
+                        .Where(e => e.EpisodeNum == episode.EpisodeNum - 1)
+                        .ToList()[0].EpisodeKey;
+                }
+
+                return returnEpisode;
             }
 
             return new NotFoundObjectResult("Nenhum resultado encontrado");

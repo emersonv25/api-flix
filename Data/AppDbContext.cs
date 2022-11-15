@@ -54,9 +54,10 @@ namespace Api.MyFlix.Data
             modelBuilder.Entity<Episode>().HasKey(e => e.EpisodeId);
             modelBuilder.Entity<Episode>().Property(e => e.EpisodeNum).IsRequired(true);
             modelBuilder.Entity<Episode>().Property(e => e.Title).IsRequired(true);
-            modelBuilder.Entity<Episode>().HasIndex(s => s.EpisodeKey).IsUnique(true);
-            modelBuilder.Entity<Episode>().Property(s => s.EpisodeKey).IsRequired();
+            modelBuilder.Entity<Episode>().HasIndex(e => e.EpisodeKey).IsUnique(true);
+            modelBuilder.Entity<Episode>().Property(e => e.EpisodeKey).IsRequired();
             modelBuilder.Entity<Episode>().Property(e => e.EpisodeVideo).IsRequired(true);
+            modelBuilder.Entity<Episode>().HasOne(e => e.Season).WithMany(s => s.Episodes).HasForeignKey(e => e.SeasonId);
 
 
         }

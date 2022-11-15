@@ -19,5 +19,9 @@
         public string Description { get; set; }
         public string EpisodeVideo { get; set; }
         public string EpisodeImg { get; set; }
+        public string SerieKey { get; set; }
+        public string SeasonKey { get; set; }
+        public string PreviousEpisodeKey { get; set; } = null;
+        public string NextEpisodeKey { get; set; } = null;
     }
 }

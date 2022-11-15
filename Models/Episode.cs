@@ -1,6 +1,7 @@
 ﻿using Api.MyFlix.Models.Object;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Api.MyFlix.Models
 {
@@ -18,7 +19,7 @@ namespace Api.MyFlix.Models
         }
         public Episode(ParamEpisode paramEpisode, int seasonNum ,string SerieKey)
         {
-            EpisodeKey = $"{SerieKey}-{seasonNum}-episodio-{paramEpisode.EpisodeNum}";
+            EpisodeKey = $"{SerieKey}-temporada-{seasonNum}-episodio-{paramEpisode.EpisodeNum}";
             EpisodeNum = paramEpisode.EpisodeNum;
             Title = paramEpisode.Title;
             Description = paramEpisode.Description;
@@ -35,5 +36,9 @@ namespace Api.MyFlix.Models
         public string EpisodeVideo { get; set; }
         public string EpisodeImg { get; set; }
         public DateTime CreatedDate { get; set; } = DateTime.Now;
+
+        [ForeignKey("Season")]
+        public int SeasonId { get; set; }
+        public Season Season { get; set; }
     }
 }

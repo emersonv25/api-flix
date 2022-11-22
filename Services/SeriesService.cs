@@ -82,9 +82,9 @@ namespace Api.MyFlix.Services
         }
         public async Task<ActionResult> PostSerie(ParamSerie Serie)
         {
-            var categories = _context.Category.Where(i => Serie.Categories.Contains(i.Name.ToLower())).ToList();
+            var categories = _context.Category.Where(i => Serie.Categories.Contains(i.Name.ToUpper())).ToList();
 
-            var newCategories = Serie.Categories.Where(c => !categories.Select(x => x.Name).Contains(c)).ToList();
+            var newCategories = Serie.Categories.Where(c => !categories.Select(x => x.Name.ToUpper()).Contains(c.ToUpper())).ToList();
 
             categories = categories.Concat(newCategories.Select(c => new Category(c))).ToList();
 

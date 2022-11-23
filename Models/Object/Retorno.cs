@@ -39,5 +39,29 @@ namespace Api.MyFlix.Models.Object
             set { currentPage = value; }
         }
 
+        private int totalPages;
+
+        public int TotalPages
+        {
+            get { return totalPages; }
+            set { totalPages = value; }
+        }
+
+        private bool hasPreviousPage;
+
+        public bool HasPreviousPage
+        {
+            get { return hasPreviousPage; }
+            set { hasPreviousPage = value; }
+        }
+
+        private bool hasNextPage;
+
+        public bool HasNextPage
+        {
+            get { return hasNextPage; }
+            set { hasNextPage = value; }
+        }
+
     }
 }

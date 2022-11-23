@@ -10,7 +10,13 @@ namespace Api.MyFlix.Services.Interfaces
         /// Get all series
         /// </summary>
         /// <returns></returns>
-        Task<ActionResult<IEnumerable<ReturnSeries>>> GetSerie();
+        Task<ActionResult<Result>> GetSerie(int currentPage, int pageSize);
+        /// <summary>
+        /// Search a serie by one string
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        Task<ActionResult<Result>> SearchSerie(string search, int currentPage, int pageSize);
         /// <summary>
         /// Get serie by id
         /// </summary>
@@ -23,12 +29,6 @@ namespace Api.MyFlix.Services.Interfaces
         /// <param name="key"></param>
         /// <returns></returns>
         Task<ActionResult<ReturnSerie>> GetSerieByKey(string key);
-        /// <summary>
-        /// Search a serie by one string
-        /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        Task<ActionResult<IEnumerable<ReturnSeries>>> SearchSerie(string name);
         /// <summary>
         /// Update a serie
         /// </summary>

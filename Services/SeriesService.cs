@@ -5,6 +5,7 @@ using Api.MyFlix.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Immutable;
+using System.Drawing.Printing;
 
 namespace Api.MyFlix.Services
 {
@@ -17,21 +18,80 @@ namespace Api.MyFlix.Services
             _context = context;
 
         }
-        public async Task<ActionResult<IEnumerable<ReturnSeries>>> GetSerie()
+        public async Task<ActionResult<Result>> GetSerie(int currentPage, int pageSize)
         {
-            var series = await _context.Serie.Include(m => m.Categories).ToListAsync();
+            #region paginação
+            int count = await _context.Serie.CountAsync();
+            int skip = (currentPage - 1) * pageSize;
+            int take = pageSize;
+            #endregion
+
+            var series = await _context.Serie
+                .Include(m => m.Categories)
+                .Skip(skip)
+                .Take(take)
+                .ToListAsync();
 
             var returnSeries = new List<ReturnSeries>();
 
-            if(series is not null)
+            if (series is not null)
             {
-                foreach(var Serie in series)
+                foreach (var Serie in series)
                 {
                     returnSeries.Add(new ReturnSeries(Serie));
                 }
             }
 
-            return returnSeries;
+            #region Retorno
+            Result result = new Result();
+            result.TotalResults = count;
+            result.CurrentPage = currentPage;
+            result.ItemsPerPage = pageSize;
+            result.TotalPages = (int)Math.Ceiling(count / (double)pageSize);
+            result.HasPreviousPage = currentPage > 1;
+            result.HasNextPage = currentPage < result.TotalPages;
+            result.Results = returnSeries.ToList<dynamic>();
+            #endregion
+            return result;
+        }
+        public async Task<ActionResult<Result>> SearchSerie(string search, int currentPage, int pageSize)
+        {
+            #region paginação
+            int count = await _context.Serie
+                .Where(m => m.Title.Contains(search) || m.Description.Contains(search) || m.Categories.Select(c => c.Name).Contains(search))
+                .CountAsync();
+            int skip = (currentPage - 1) * pageSize;
+            int take = pageSize;
+            #endregion
+
+            search = search.Trim();
+            var series = await _context.Serie
+                .Where(m => m.Title.Contains(search) || m.Description.Contains(search) || m.Categories.Select(c => c.Name).Contains(search))
+                .Skip(skip)
+                .Take(take)
+                .Include(m => m.Categories).ToListAsync();
+
+            var returnSeries = new List<ReturnSeries>();
+
+            if (series is not null)
+            {
+                foreach (var serie in series)
+                {
+                    returnSeries.Add(new ReturnSeries(serie));
+                }
+            }
+
+            #region Retorno
+            Result result = new Result();
+            result.TotalResults = count;
+            result.CurrentPage = currentPage;
+            result.ItemsPerPage = pageSize;
+            result.TotalPages = (int)Math.Ceiling(count / (double)pageSize);
+            result.HasPreviousPage = currentPage > 1;
+            result.HasNextPage = currentPage < result.TotalPages;
+            result.Results = returnSeries.ToList<dynamic>();
+            #endregion
+            return result;
         }
 
         public async Task<ActionResult<ReturnSerie>> GetSerieById(int id)
@@ -41,9 +101,9 @@ namespace Api.MyFlix.Services
                 .Include(m => m.Seasons)
                 .ThenInclude(s => s.Episodes).FirstOrDefaultAsync(m => m.SerieId == id);
 
-            if(serie is not null)
+            if (serie is not null)
             {
-               return new ReturnSerie(serie);
+                return new ReturnSerie(serie);
             }
 
             return new NotFoundObjectResult("Nenhum resultado encontrado");
@@ -61,24 +121,6 @@ namespace Api.MyFlix.Services
             }
 
             return new NotFoundObjectResult("Nenhum resultado encontrado");
-        }
-        public async Task<ActionResult<IEnumerable<ReturnSeries>>> SearchSerie(string name)
-        {
-            name = name.Trim();
-            var series = await _context.Serie
-                .Where(m => m.Title.Contains(name) || m.Description.Contains(name) || m.Categories.Select(c => c.Name).Contains(name))
-                .Include(m => m.Categories).ToListAsync();
-
-            var returnSeries = new List<ReturnSeries>();
-
-            if (series is not null)
-            {
-                foreach (var serie in series)
-                {
-                    returnSeries.Add(new ReturnSeries(serie));
-                }
-            }
-            return returnSeries;
         }
         public async Task<ActionResult> PostSerie(ParamSerie Serie)
         {

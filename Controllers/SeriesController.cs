@@ -18,9 +18,16 @@ namespace Api.MyFlix.Controllers
 
         // GET: api/Series
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ReturnSeries>>> GetSerie()
+        public async Task<ActionResult<Result>> GetSerie([FromQuery] int currentPage = 1, [FromQuery] int pageSize = 15)
         {
-            return await _seriesService.GetSerie();
+            return await _seriesService.GetSerie(currentPage, pageSize);
+        }
+
+        // GET: api/Series/search?name=One Piece
+        [HttpGet("search")]
+        public async Task<ActionResult<Result>> SearchSerie([FromQuery] string search, [FromQuery] int currentPage = 1, [FromQuery] int pageSize = 15)
+        {
+            return await _seriesService.SearchSerie(search, currentPage, pageSize);
         }
 
         // GET: api/Series/5
@@ -29,18 +36,12 @@ namespace Api.MyFlix.Controllers
         {
             return await _seriesService.GetSerieById(id);
         }
+
         // GET: api/Series/one-piece
         [HttpGet("{key}")]
         public async Task<ActionResult<ReturnSerie>> GetSerieByKey(string key)
         {
             return await _seriesService.GetSerieByKey(key);
-        }
-
-        // GET: api/Series/search?name=One Piece
-        [HttpGet("search")]
-        public async Task<ActionResult<IEnumerable<ReturnSeries>>> SearchSerie(string name)
-        {
-            return await _seriesService.SearchSerie(name);
         }
 
         // PUT: api/Series/5

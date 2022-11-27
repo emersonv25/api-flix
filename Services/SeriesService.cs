@@ -5,7 +5,6 @@ using Api.MyFlix.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Immutable;
-using System.Drawing.Printing;
 
 namespace Api.MyFlix.Services
 {
@@ -18,19 +17,31 @@ namespace Api.MyFlix.Services
             _context = context;
 
         }
-        public async Task<ActionResult<Result>> GetSerie(int currentPage, int pageSize)
+        public async Task<ActionResult<Result>> GetSerie(string search, int currentPage, int pageSize, string sortOrder)
         {
-            #region paginação
+            #region pagination
             int count = await _context.Serie.CountAsync();
             int skip = (currentPage - 1) * pageSize;
             int take = pageSize;
             #endregion
+            List<Serie> series;
 
-            var series = await _context.Serie
+            if (string.IsNullOrWhiteSpace(search))
+            {
+                series = await _context.Serie
                 .Include(m => m.Categories)
                 .Skip(skip)
                 .Take(take)
                 .ToListAsync();
+            }
+            else
+            {
+                series = await _context.Serie
+                .Where(m => m.Title.Contains(search) || m.Description.Contains(search) || m.Categories.Select(c => c.Name).Contains(search))
+                .Skip(skip)
+                .Take(take)
+                .Include(m => m.Categories).ToListAsync();
+            }
 
             var returnSeries = new List<ReturnSeries>();
 
@@ -42,55 +53,25 @@ namespace Api.MyFlix.Services
                 }
             }
 
-            #region Retorno
-            Result result = new Result();
-            result.TotalResults = count;
-            result.CurrentPage = currentPage;
-            result.ItemsPerPage = pageSize;
-            result.TotalPages = (int)Math.Ceiling(count / (double)pageSize);
-            result.HasPreviousPage = currentPage > 1;
-            result.HasNextPage = currentPage < result.TotalPages;
-            result.Results = returnSeries.ToList<dynamic>();
-            #endregion
-            return result;
-        }
-        public async Task<ActionResult<Result>> SearchSerie(string search, int currentPage, int pageSize)
-        {
-            #region paginação
-            int count = await _context.Serie
-                .Where(m => m.Title.Contains(search) || m.Description.Contains(search) || m.Categories.Select(c => c.Name).Contains(search))
-                .CountAsync();
-            int skip = (currentPage - 1) * pageSize;
-            int take = pageSize;
-            #endregion
-
-            search = search.Trim();
-            var series = await _context.Serie
-                .Where(m => m.Title.Contains(search) || m.Description.Contains(search) || m.Categories.Select(c => c.Name).Contains(search))
-                .Skip(skip)
-                .Take(take)
-                .Include(m => m.Categories).ToListAsync();
-
-            var returnSeries = new List<ReturnSeries>();
-
-            if (series is not null)
+            #region filters
+            switch (sortOrder)
             {
-                foreach (var serie in series)
-                {
-                    returnSeries.Add(new ReturnSeries(serie));
-                }
+                case "title_asc":
+                    returnSeries = returnSeries.OrderBy(r => r.Title).ToList();
+                    break;
+                case "title_desc":
+                    returnSeries = returnSeries.OrderByDescending(r => r.Title).ToList();
+                    break;
+                case "date_asc":
+                    returnSeries = returnSeries.OrderBy(r => r.ReleasedDate).ToList();
+                    break;
+                case "date_desc":
+                    returnSeries = returnSeries.OrderByDescending(r => r.ReleasedDate).ToList();
+                    break;
             }
-
-            #region Retorno
-            Result result = new Result();
-            result.TotalResults = count;
-            result.CurrentPage = currentPage;
-            result.ItemsPerPage = pageSize;
-            result.TotalPages = (int)Math.Ceiling(count / (double)pageSize);
-            result.HasPreviousPage = currentPage > 1;
-            result.HasNextPage = currentPage < result.TotalPages;
-            result.Results = returnSeries.ToList<dynamic>();
             #endregion
+
+            Result result = new Result(returnSeries.ToList<dynamic>(), count, currentPage, pageSize);
             return result;
         }
 

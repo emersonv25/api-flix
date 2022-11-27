@@ -18,16 +18,9 @@ namespace Api.MyFlix.Controllers
 
         // GET: api/Series
         [HttpGet]
-        public async Task<ActionResult<Result>> GetSerie([FromQuery] int currentPage = 1, [FromQuery] int pageSize = 15)
+        public async Task<ActionResult<Result>> GetSerie([FromQuery] string search = null,[FromQuery] int currentPage = 1, [FromQuery] int pageSize = 15, [FromQuery] string sortOrder = "title_asc")
         {
-            return await _seriesService.GetSerie(currentPage, pageSize);
-        }
-
-        // GET: api/Series/search?name=One Piece
-        [HttpGet("search")]
-        public async Task<ActionResult<Result>> SearchSerie([FromQuery] string search, [FromQuery] int currentPage = 1, [FromQuery] int pageSize = 15)
-        {
-            return await _seriesService.SearchSerie(search, currentPage, pageSize);
+            return await _seriesService.GetSerie(search, currentPage, pageSize, sortOrder);
         }
 
         // GET: api/Series/5

@@ -9,14 +9,12 @@ namespace Api.MyFlix.Services.Interfaces
         /// <summary>
         /// Get all series
         /// </summary>
+        /// <param name="search"></param>
+        /// <param name="currentPage"></param>
+        /// <param name="pageSize"></param>
+        /// <param name="sortOrder"></param>
         /// <returns></returns>
-        Task<ActionResult<Result>> GetSerie(int currentPage, int pageSize);
-        /// <summary>
-        /// Search a serie by one string
-        /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        Task<ActionResult<Result>> SearchSerie(string search, int currentPage, int pageSize);
+        Task<ActionResult<Result>> GetSerie(string search, int currentPage, int pageSize, string sortOrder);
         /// <summary>
         /// Get serie by id
         /// </summary>

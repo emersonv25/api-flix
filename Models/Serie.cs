@@ -27,6 +27,7 @@ namespace Api.MyFlix.Models
         public string PosterImg { get; set; }
         public string ReleasedDate { get; set; }
         public DateTime CreatedDate { get; set; } = DateTime.Now;
+        public int Views { get; set; }
 
         public List<Season> Seasons { get; set; }
 

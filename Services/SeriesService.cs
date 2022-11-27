@@ -98,6 +98,8 @@ namespace Api.MyFlix.Services
 
             if (serie is not null)
             {
+                serie.Views += 1;
+                _context.SaveChanges();
                 return new ReturnSerie(serie);
             }
 

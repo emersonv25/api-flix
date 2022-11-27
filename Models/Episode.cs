@@ -36,6 +36,7 @@ namespace Api.MyFlix.Models
         public string EpisodeVideo { get; set; }
         public string EpisodeImg { get; set; }
         public DateTime CreatedDate { get; set; } = DateTime.Now;
+        public int Views { get; set; }
 
         [ForeignKey("Season")]
         public int SeasonId { get; set; }

@@ -1,4 +1,6 @@
-﻿namespace Api.MyFlix.Models.Object
+﻿using System.Security.Cryptography.X509Certificates;
+
+namespace Api.MyFlix.Models.Object
 {
 
     public class ReturnSerie
@@ -34,6 +36,8 @@
             PosterImg = Serie.PosterImg;
             ReleasedDate = Serie.ReleasedDate;
             Categories = Serie.Categories.Select(x => x.Name).ToList();
+            CreatedDate = Serie.CreatedDate;
+            Views = Serie.Views;
         }
 
         public string SerieKey { get; set; }
@@ -41,6 +45,8 @@
         public string Description { get; set; }
         public string PosterImg { get; set; }
         public string ReleasedDate { get; set; }
+        public DateTime CreatedDate { get; set; }
+        public int Views { get; set; }
         public List<string> Categories { get; set; }
     }
 

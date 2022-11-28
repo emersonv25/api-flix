@@ -18,7 +18,7 @@ namespace Api.MyFlix.Controllers
 
         // GET: api/Series
         [HttpGet]
-        public async Task<ActionResult<Result>> GetSerie([FromQuery] string search = null,[FromQuery] int currentPage = 1, [FromQuery] int pageSize = 15, [FromQuery] string sortOrder = "title_asc")
+        public async Task<ActionResult<Result>> GetSerie([FromQuery] string search = null,[FromQuery] int currentPage = 1, [FromQuery] int pageSize = 15, [FromQuery] string sortOrder = "title")
         {
             return await _seriesService.GetSerie(search, currentPage, pageSize, sortOrder);
         }

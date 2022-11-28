@@ -11,6 +11,8 @@
             Description = episode.Description;
             EpisodeVideo = episode.EpisodeVideo;
             EpisodeImg = episode.EpisodeImg;
+            CreatedDate = episode.CreatedDate;
+            Views = episode.Views;   
         }
 
         public string EpisodeKey { get; set; }
@@ -21,6 +23,8 @@
         public string EpisodeImg { get; set; }
         public string SerieKey { get; set; }
         public string SeasonKey { get; set; }
+        public DateTime CreatedDate { get; set; }
+        public int Views { get; set; }
         public string PreviousEpisodeKey { get; set; } = null;
         public string NextEpisodeKey { get; set; } = null;
     }

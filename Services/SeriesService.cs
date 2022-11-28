@@ -24,23 +24,43 @@ namespace Api.MyFlix.Services
             int skip = (currentPage - 1) * pageSize;
             int take = pageSize;
             #endregion
-            List<Serie> series;
 
+            #region sort
+            string columnOrder = "Title";
+            bool isAsc = true;
+            switch(sortOrder)
+            {
+                case "title":
+                    columnOrder= "Title";
+                break;
+
+                case "created_date":
+                    columnOrder = "CreatedDate";
+                    break;
+                case "released_date":
+                    columnOrder = "ReleasedDate";
+                    break;
+                case "most_view":
+                    columnOrder = "Views";
+                    isAsc= false;
+                    break;
+            }
+            #endregion
+
+            List<Serie> series;
             if (string.IsNullOrWhiteSpace(search))
             {
-                series = await _context.Serie
-                .Include(m => m.Categories)
-                .Skip(skip)
-                .Take(take)
-                .ToListAsync();
+                if (isAsc)
+                    series = await _context.Serie.Include(m => m.Categories).OrderBy(p => EF.Property<object>(p, columnOrder)).Skip(skip).Take(take).ToListAsync();
+                else
+                    series = await _context.Serie.Include(m => m.Categories).OrderByDescending(p => EF.Property<object>(p, columnOrder)).Skip(skip).Take(take).ToListAsync();
             }
             else
             {
-                series = await _context.Serie
-                .Where(m => m.Title.Contains(search) || m.Description.Contains(search) || m.Categories.Select(c => c.Name).Contains(search))
-                .Skip(skip)
-                .Take(take)
-                .Include(m => m.Categories).ToListAsync();
+                if(isAsc)
+                    series = await _context.Serie.Include(m => m.Categories).OrderBy(p => EF.Property<object>(p, columnOrder)).Skip(skip).Take(take).ToListAsync();
+                else
+                    series = await _context.Serie.Include(m => m.Categories).OrderByDescending(p => EF.Property<object>(p, columnOrder)).Skip(skip).Take(take).ToListAsync();
             }
 
             var returnSeries = new List<ReturnSeries>();
@@ -52,24 +72,6 @@ namespace Api.MyFlix.Services
                     returnSeries.Add(new ReturnSeries(Serie));
                 }
             }
-
-            #region filters
-            switch (sortOrder)
-            {
-                case "title_asc":
-                    returnSeries = returnSeries.OrderBy(r => r.Title).ToList();
-                    break;
-                case "title_desc":
-                    returnSeries = returnSeries.OrderByDescending(r => r.Title).ToList();
-                    break;
-                case "date_asc":
-                    returnSeries = returnSeries.OrderBy(r => r.ReleasedDate).ToList();
-                    break;
-                case "date_desc":
-                    returnSeries = returnSeries.OrderByDescending(r => r.ReleasedDate).ToList();
-                    break;
-            }
-            #endregion
 
             Result result = new Result(returnSeries.ToList<dynamic>(), count, currentPage, pageSize);
             return result;

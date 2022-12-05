@@ -38,6 +38,7 @@ namespace Api.MyFlix.Models.Object
             Categories = Serie.Categories.Select(x => x.Name).ToList();
             CreatedDate = Serie.CreatedDate;
             Views = Serie.Views;
+            LatestRelease = Serie.LatestRelease;
         }
 
         public string SerieKey { get; set; }
@@ -45,6 +46,7 @@ namespace Api.MyFlix.Models.Object
         public string Description { get; set; }
         public string PosterImg { get; set; }
         public string ReleasedDate { get; set; }
+        public DateTime LatestRelease { get; set; }
         public DateTime CreatedDate { get; set; }
         public int Views { get; set; }
         public List<string> Categories { get; set; }

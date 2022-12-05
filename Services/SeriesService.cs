@@ -5,6 +5,7 @@ using Api.MyFlix.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Immutable;
+using System.Xml.Linq;
 
 namespace Api.MyFlix.Services
 {
@@ -28,21 +29,26 @@ namespace Api.MyFlix.Services
             #region sort
             string columnOrder = "Title";
             bool isAsc = true;
-            switch(sortOrder)
+            switch (sortOrder)
             {
                 case "title":
-                    columnOrder= "Title";
-                break;
-
+                    columnOrder = "Title";
+                    break;
+                case "latest_release":
+                    columnOrder = "LatestRelease";
+                    isAsc = false;
+                    break;
                 case "created_date":
                     columnOrder = "CreatedDate";
+                    isAsc = false;
                     break;
                 case "released_date":
                     columnOrder = "ReleasedDate";
+                    isAsc = false;
                     break;
                 case "most_view":
                     columnOrder = "Views";
-                    isAsc= false;
+                    isAsc = false;
                     break;
             }
             #endregion
@@ -57,10 +63,18 @@ namespace Api.MyFlix.Services
             }
             else
             {
-                if(isAsc)
-                    series = await _context.Serie.Include(m => m.Categories).OrderBy(p => EF.Property<object>(p, columnOrder)).Skip(skip).Take(take).ToListAsync();
+                if (isAsc)
+                    series = await _context.Serie
+                        .Include(m => m.Categories)
+                        .Where(m => m.Title.Contains(search) || m.Description.Contains(search) || m.Categories.Select(c => c.Name).Contains(search))
+                        .OrderBy(p => EF.Property<object>(p, columnOrder))
+                        .Skip(skip).Take(take).ToListAsync();
                 else
-                    series = await _context.Serie.Include(m => m.Categories).OrderByDescending(p => EF.Property<object>(p, columnOrder)).Skip(skip).Take(take).ToListAsync();
+                    series = await _context.Serie
+                        .Include(m => m.Categories)
+                        .Where(m => m.Title.Contains(search) || m.Description.Contains(search) || m.Categories.Select(c => c.Name).Contains(search))
+                        .OrderByDescending(p => EF.Property<object>(p, columnOrder))
+                        .Skip(skip).Take(take).ToListAsync();
             }
 
             var returnSeries = new List<ReturnSeries>();

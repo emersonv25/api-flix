@@ -69,10 +69,10 @@ namespace Api.MyFlix.Services
             }
             var newEpisode = new Episode(episode, seasonNum, serieKey);
             newEpisode.SeasonId = season.SeasonId;
-
             _context.Espisode.Add(newEpisode);
+            var serie = await _context.Serie.FirstOrDefaultAsync(s => s.SerieKey == serieKey);
+            serie.LatestRelease = DateTime.Now;
             await _context.SaveChangesAsync();
-
             return new OkObjectResult("Cadastrado com Sucesso");
         }
     }

@@ -3,7 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Security.Cryptography;
+using System.Security.Policy;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -51,6 +53,18 @@ namespace Api.MyFlix.Services
 
             return str.Trim();
         }
+        #region Download de arquivos
+        public static string Download(string url, string fileName, string imagePath)
+        {
+            string ext = System.IO.Path.GetExtension(url);
+            string path = Path.Combine(imagePath, fileName + ext);
+            using (var client = new WebClient())
+            {
+                client.DownloadFile(url, path);
+            }
+            return fileName + ext;
+        }
+        #endregion
         #region Manipulação de arquivos
         public static string GetFileFormat(string fullFileName)
         {

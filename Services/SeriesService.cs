@@ -11,16 +11,18 @@ namespace Api.MyFlix.Services
     public class SeriesService : ISeriesService
     {
         private readonly AppDbContext _context;
+        private readonly IConfiguration _configuration;
 
-        public SeriesService(AppDbContext context)
+        public SeriesService(AppDbContext context, IConfiguration configuration)
         {
+            _configuration = configuration;
             _context = context;
 
         }
         public async Task<ActionResult<Result>> GetSerie(string search, int currentPage, int pageSize, string sortOrder)
         {
             #region pagination
-            int count = await _context.Serie.CountAsync();
+            int count = 0;
             int skip = (currentPage - 1) * pageSize;
             int take = pageSize;
             #endregion
@@ -56,33 +58,48 @@ namespace Api.MyFlix.Services
             if (string.IsNullOrWhiteSpace(search))
             {
                 if (isAsc)
+                {
                     series = await _context.Serie.Include(m => m.Categories).OrderBy(p => EF.Property<object>(p, columnOrder)).Skip(skip).Take(take).ToListAsync();
+                    count = _context.Serie.Count();
+                }
                 else
+                {
                     series = await _context.Serie.Include(m => m.Categories).OrderByDescending(p => EF.Property<object>(p, columnOrder)).Skip(skip).Take(take).ToListAsync();
+                    count = _context.Serie.Count();
+                }
             }
             else
             {
                 if (isAsc)
+                {
                     series = await _context.Serie
                         .Include(m => m.Categories)
                         .Where(m => m.Title.Contains(search) || m.Description.Contains(search) || m.Categories.Select(c => c.Name).Contains(search))
                         .OrderBy(p => EF.Property<object>(p, columnOrder))
                         .Skip(skip).Take(take).ToListAsync();
+
+                    count = await _context.Serie.Where(m => m.Title.Contains(search) || m.Description.Contains(search) || m.Categories.Select(c => c.Name).Contains(search)).CountAsync();
+                }
                 else
+                {
                     series = await _context.Serie
                         .Include(m => m.Categories)
                         .Where(m => m.Title.Contains(search) || m.Description.Contains(search) || m.Categories.Select(c => c.Name).Contains(search))
                         .OrderByDescending(p => EF.Property<object>(p, columnOrder))
                         .Skip(skip).Take(take).ToListAsync();
+
+                    count = await _context.Serie.Where(m => m.Title.Contains(search) || m.Description.Contains(search) || m.Categories.Select(c => c.Name).Contains(search)).CountAsync();
+                }
+
             }
 
             var returnSeries = new List<ReturnSeries>();
 
             if (series is not null)
             {
-                foreach (var Serie in series)
+                foreach (var serie in series)
                 {
-                    returnSeries.Add(new ReturnSeries(Serie));
+                    returnSeries.Add(new ReturnSeries(GetImageUrlSerie(serie)));
                 }
             }
 
@@ -115,7 +132,7 @@ namespace Api.MyFlix.Services
             {
                 serie.Views += 1;
                 _context.SaveChanges();
-                return new ReturnSerie(serie);
+                return new ReturnSerie(GetImageUrlSerie(serie));
             }
 
             return new NotFoundObjectResult("Nenhum resultado encontrado");
@@ -137,6 +154,7 @@ namespace Api.MyFlix.Services
                 Serie.Seasons,
                 categories
             );
+
             if (SerieExistsByKey(newSerie.SerieKey))
             {
                 //return new BadRequestObjectResult($"{newSerie.SerieKey} já existe");
@@ -150,9 +168,10 @@ namespace Api.MyFlix.Services
                         foreach (var episode in season.Episodes)
                         {
                             var newEpisode = existSeason.Episodes.FirstOrDefault(e => e.EpisodeKey.Equals(episode.EpisodeKey));
-                            if(newEpisode == null)
+                            if (newEpisode == null)
                             {
-                                serie.Seasons.First(s => s.SeasonKey == season.SeasonKey).Episodes.Add(newEpisode);
+                                var addEpisode = SaveImagesOfEpisode(episode);
+                                serie.Seasons.First(s => s.SeasonKey == season.SeasonKey).Episodes.Add(addEpisode);
                             }
                         }
                     }
@@ -164,6 +183,7 @@ namespace Api.MyFlix.Services
             }
             else
             {
+                newSerie = SaveImagesOfSerie(newSerie);
                 _context.Serie.Add(newSerie);
             }
 
@@ -221,6 +241,46 @@ namespace Api.MyFlix.Services
         private bool SerieExistsByKey(string key)
         {
             return _context.Serie.Any(e => e.SerieKey == key);
+        }
+        private Serie SaveImagesOfSerie(Serie serie)
+        {
+            serie.PosterImg = Utils.Download(serie.PosterImg, serie.SerieKey, _configuration["Directories:ImagesPath"]);
+            int iS = 0;
+            foreach (var season in serie.Seasons)
+            {
+                int iE = 0;
+                foreach (var episode in season.Episodes)
+                {
+                    serie.Seasons[iS].Episodes[iE].EpisodeImg = Utils.Download(serie.Seasons[iS].Episodes[iE].EpisodeImg, serie.Seasons[iS].Episodes[iE].EpisodeKey, _configuration["Directories:ImagesPath"]);
+                    iE++;
+                }
+                iS++;
+            }
+            return serie;
+        }
+        private Episode SaveImagesOfEpisode(Episode episode)
+        {
+            episode.EpisodeImg = Utils.Download(episode.EpisodeImg, episode.EpisodeKey, _configuration["Directories:ImagesPath"]);
+            return episode;
+        }
+        private Serie GetImageUrlSerie(Serie serie)
+        {
+            serie.PosterImg = Utils.GetFileUrl(serie.PosterImg, _configuration["Directories:BaseUrl"], _configuration["Directories:ImagesPath"]);
+            if (serie.Seasons is not null)
+            {
+                int isS = 0;
+                foreach (var season in serie.Seasons)
+                {
+                    int iE = 0;
+                    foreach (var episode in season.Episodes)
+                    {
+                        serie.Seasons[isS].Episodes[iE].EpisodeImg = Utils.GetFileUrl(serie.Seasons[isS].Episodes[iE].EpisodeImg, _configuration["Directories:BaseUrl"], _configuration["Directories:ImagesPath"]);
+                        iE++;
+                    }
+                    isS++;
+                }
+            }
+            return serie;
         }
     }
 }

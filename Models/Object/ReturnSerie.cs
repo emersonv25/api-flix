@@ -1,6 +1,4 @@
-﻿using System.Security.Cryptography.X509Certificates;
-
-namespace Api.MyFlix.Models.Object
+﻿namespace Api.MyFlix.Models.Object
 {
 
     public class ReturnSerie

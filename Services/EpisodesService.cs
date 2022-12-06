@@ -10,11 +10,12 @@ namespace Api.MyFlix.Services
     public class EpisodesService : IEpisodesService
     {
         private readonly AppDbContext _context;
+        private readonly IConfiguration _configuration;
 
-        public EpisodesService(AppDbContext context)
+        public EpisodesService(AppDbContext context, IConfiguration configuration)
         {
             _context = context;
-
+            _configuration = configuration;
         }
 
         public async Task<ActionResult<ReturnEpisode>> GetEpisodeByKey(string key)
@@ -27,7 +28,7 @@ namespace Api.MyFlix.Services
 
             if (episode is not null)
             {
-                var returnEpisode = new ReturnEpisode(episode);
+                var returnEpisode = new ReturnEpisode(GetImageUrlEpisode(episode));
                 returnEpisode.SerieKey = episode.Season.Serie.SerieKey;
                 returnEpisode.SeasonKey = episode.Season.SeasonKey;
                 if(episode.Season.Episodes.Any(e => e.EpisodeNum == episode.EpisodeNum + 1))
@@ -74,6 +75,12 @@ namespace Api.MyFlix.Services
             serie.LatestRelease = DateTime.Now;
             await _context.SaveChangesAsync();
             return new OkObjectResult("Cadastrado com Sucesso");
+        }
+        private Episode GetImageUrlEpisode(Episode episode)
+        {
+            episode.EpisodeImg = Utils.GetFileUrl(episode.EpisodeImg, _configuration["Directories:BaseUrl"], _configuration["Directories:ImagesPath"]);
+
+            return episode;
         }
     }
 }

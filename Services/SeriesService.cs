@@ -5,7 +5,6 @@ using Api.MyFlix.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Immutable;
-using System.Xml.Linq;
 
 namespace Api.MyFlix.Services
 {
@@ -140,10 +139,34 @@ namespace Api.MyFlix.Services
             );
             if (SerieExistsByKey(newSerie.SerieKey))
             {
-                return new BadRequestObjectResult($"{newSerie.SerieKey} já existe");
+                //return new BadRequestObjectResult($"{newSerie.SerieKey} já existe");
+                var serie = await _context.Serie.Include(s => s.Seasons).ThenInclude(s => s.Episodes).FirstOrDefaultAsync(s => s.SerieKey == newSerie.SerieKey);
+                var newSeason = new Season();
+                foreach (var season in newSerie.Seasons)
+                {
+                    var existSeason = serie.Seasons.FirstOrDefault(s => s.SeasonKey.Equals(season.SeasonKey));
+                    if (existSeason != null)
+                    {
+                        foreach (var episode in season.Episodes)
+                        {
+                            var newEpisode = existSeason.Episodes.FirstOrDefault(e => e.EpisodeKey.Equals(episode.EpisodeKey));
+                            if(newEpisode == null)
+                            {
+                                serie.Seasons.First(s => s.SeasonKey == season.SeasonKey).Episodes.Add(newEpisode);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        serie.Seasons.Add(season);
+                    }
+                }
+            }
+            else
+            {
+                _context.Serie.Add(newSerie);
             }
 
-            _context.Serie.Add(newSerie);
             await _context.SaveChangesAsync();
 
             return new OkObjectResult("Cadastrado com Sucesso");

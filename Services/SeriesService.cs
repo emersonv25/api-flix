@@ -5,6 +5,7 @@ using Api.MyFlix.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Immutable;
+using System.Drawing.Printing;
 
 namespace Api.MyFlix.Services
 {
@@ -19,7 +20,7 @@ namespace Api.MyFlix.Services
             _context = context;
 
         }
-        public async Task<ActionResult<Result>> GetSerie(string search, int currentPage, int pageSize, string sortOrder)
+        public async Task<ActionResult<Result>> GetSerie(string search, string keys,int currentPage, int pageSize, string sortOrder)
         {
             #region pagination
             int count = 0;
@@ -55,18 +56,32 @@ namespace Api.MyFlix.Services
             #endregion
 
             List<Serie> series;
-            if (string.IsNullOrWhiteSpace(search))
+            if(!string.IsNullOrWhiteSpace(keys))
+            {
+                var listKeys = keys.Split(';').ToList();
+                if (isAsc)
+                {
+                    series = await _context.Serie.Include(m => m.Categories).Where(s => listKeys.Contains(s.SerieKey)).OrderBy(p => EF.Property<object>(p, columnOrder)).Skip(skip).Take(take).ToListAsync();
+                }
+                else
+                {
+                    series = await _context.Serie.Include(m => m.Categories).Where(s => listKeys.Contains(s.SerieKey)).OrderByDescending(p => EF.Property<object>(p, columnOrder)).Skip(skip).Take(take).ToListAsync();
+                }
+
+                count = await _context.Serie.Include(m => m.Categories).Where(s => listKeys.Contains(s.SerieKey)).CountAsync();
+            }
+            else if (string.IsNullOrWhiteSpace(search))
             {
                 if (isAsc)
                 {
                     series = await _context.Serie.Include(m => m.Categories).OrderBy(p => EF.Property<object>(p, columnOrder)).Skip(skip).Take(take).ToListAsync();
-                    count = _context.Serie.Count();
                 }
                 else
                 {
                     series = await _context.Serie.Include(m => m.Categories).OrderByDescending(p => EF.Property<object>(p, columnOrder)).Skip(skip).Take(take).ToListAsync();
-                    count = _context.Serie.Count();
                 }
+
+                count = await _context.Serie.CountAsync();
             }
             else
             {
@@ -77,8 +92,6 @@ namespace Api.MyFlix.Services
                         .Where(m => m.Title.Contains(search) || m.Description.Contains(search) || m.Categories.Select(c => c.Name).Contains(search))
                         .OrderBy(p => EF.Property<object>(p, columnOrder))
                         .Skip(skip).Take(take).ToListAsync();
-
-                    count = await _context.Serie.Where(m => m.Title.Contains(search) || m.Description.Contains(search) || m.Categories.Select(c => c.Name).Contains(search)).CountAsync();
                 }
                 else
                 {
@@ -87,10 +100,9 @@ namespace Api.MyFlix.Services
                         .Where(m => m.Title.Contains(search) || m.Description.Contains(search) || m.Categories.Select(c => c.Name).Contains(search))
                         .OrderByDescending(p => EF.Property<object>(p, columnOrder))
                         .Skip(skip).Take(take).ToListAsync();
-
-                    count = await _context.Serie.Where(m => m.Title.Contains(search) || m.Description.Contains(search) || m.Categories.Select(c => c.Name).Contains(search)).CountAsync();
                 }
 
+                count = await _context.Serie.Where(m => m.Title.Contains(search) || m.Description.Contains(search) || m.Categories.Select(c => c.Name).Contains(search)).CountAsync();
             }
 
             var returnSeries = new List<ReturnSeries>();
@@ -137,32 +149,32 @@ namespace Api.MyFlix.Services
 
             return new NotFoundObjectResult("Nenhum resultado encontrado");
         }
-        public async Task<ActionResult> PostSerie(ParamSerie Serie)
+        public async Task<ActionResult> PostSerie(ParamSerie paramSerie)
         {
-            var categories = _context.Category.Where(i => Serie.Categories.Contains(i.Name.ToUpper())).ToList();
+            var categories = _context.Category.Where(i => paramSerie.Categories.Contains(i.Name.ToUpper())).ToList();
 
-            var newCategories = Serie.Categories.Where(c => !categories.Select(x => x.Name.ToUpper()).Contains(c.ToUpper())).ToList();
+            var newCategories = paramSerie.Categories.Where(c => !categories.Select(x => x.Name.ToUpper()).Contains(c.ToUpper())).ToList();
 
             categories = categories.Concat(newCategories.Select(c => new Category(c))).ToList();
 
             var newSerie = new Serie
             (
-                Serie.Title,
-                Serie.Description,
-                Serie.PosterImg,
-                Serie.ReleasedDate,
-                Serie.Seasons,
+                paramSerie.Title,
+                paramSerie.Description,
+                paramSerie.PosterImg,
+                paramSerie.ReleasedDate,
+                paramSerie.Seasons,
                 categories
             );
 
             if (SerieExistsByKey(newSerie.SerieKey))
             {
                 //return new BadRequestObjectResult($"{newSerie.SerieKey} já existe");
-                var serie = await _context.Serie.Include(s => s.Seasons).ThenInclude(s => s.Episodes).FirstOrDefaultAsync(s => s.SerieKey == newSerie.SerieKey);
+                var serieExist = await _context.Serie.Include(s => s.Seasons).ThenInclude(s => s.Episodes).FirstOrDefaultAsync(s => s.SerieKey == newSerie.SerieKey);
                 var newSeason = new Season();
                 foreach (var season in newSerie.Seasons)
                 {
-                    var existSeason = serie.Seasons.FirstOrDefault(s => s.SeasonKey.Equals(season.SeasonKey));
+                    var existSeason = serieExist.Seasons.FirstOrDefault(s => s.SeasonKey.Equals(season.SeasonKey));
                     if (existSeason != null)
                     {
                         foreach (var episode in season.Episodes)
@@ -171,13 +183,16 @@ namespace Api.MyFlix.Services
                             if (newEpisode == null)
                             {
                                 var addEpisode = SaveImagesOfEpisode(episode);
-                                serie.Seasons.First(s => s.SeasonKey == season.SeasonKey).Episodes.Add(addEpisode);
+                                serieExist.Seasons.First(s => s.SeasonKey == season.SeasonKey).Episodes.Add(addEpisode);
+                                serieExist.LatestRelease = DateTime.Now;
                             }
                         }
                     }
                     else
                     {
-                        serie.Seasons.Add(season);
+                        serieExist.Seasons.Add(season);
+                        serieExist.LatestRelease = DateTime.Now;
+
                     }
                 }
             }
@@ -189,6 +204,71 @@ namespace Api.MyFlix.Services
 
             await _context.SaveChangesAsync();
 
+            return new OkObjectResult("Cadastrado com Sucesso");
+        }
+        public async Task<ActionResult> PostSeries(List<ParamSerie> paramSeries)
+        {
+            List<string> seriesWithErro = new List<string>();
+            foreach(var paramSerie in paramSeries)
+            {
+                try
+                {
+                    var categories = _context.Category.Where(i => paramSerie.Categories.Contains(i.Name.ToUpper())).ToList();
+
+                    var newCategories = paramSerie.Categories.Where(c => !categories.Select(x => x.Name.ToUpper()).Contains(c.ToUpper())).ToList();
+
+                    categories = categories.Concat(newCategories.Select(c => new Category(c))).ToList();
+
+                    var newSerie = new Serie
+                    (
+                        paramSerie.Title,
+                        paramSerie.Description,
+                        paramSerie.PosterImg,
+                        paramSerie.ReleasedDate,
+                        paramSerie.Seasons,
+                        categories
+                    );
+
+                    if (SerieExistsByKey(newSerie.SerieKey))
+                    {
+                        //return new BadRequestObjectResult($"{newSerie.SerieKey} já existe");
+                        var serieExist = await _context.Serie.Include(s => s.Seasons).ThenInclude(s => s.Episodes).FirstOrDefaultAsync(s => s.SerieKey == newSerie.SerieKey);
+                        var newSeason = new Season();
+                        foreach (var season in newSerie.Seasons)
+                        {
+                            var existSeason = serieExist.Seasons.FirstOrDefault(s => s.SeasonKey.Equals(season.SeasonKey));
+                            if (existSeason != null)
+                            {
+                                foreach (var episode in season.Episodes)
+                                {
+                                    var newEpisode = existSeason.Episodes.FirstOrDefault(e => e.EpisodeKey.Equals(episode.EpisodeKey));
+                                    if (newEpisode == null)
+                                    {
+                                        var addEpisode = SaveImagesOfEpisode(episode);
+                                        serieExist.Seasons.First(s => s.SeasonKey == season.SeasonKey).Episodes.Add(addEpisode);
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                serieExist.Seasons.Add(season);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        newSerie = SaveImagesOfSerie(newSerie);
+                        _context.Serie.Add(newSerie);
+                    }
+                    await _context.SaveChangesAsync();
+                }
+                catch(Exception ex)
+                {
+                    seriesWithErro.Add(paramSerie.Title + ": (exception): " + ex.Message);
+                }
+            }
+            if (seriesWithErro.Count > 0)
+                return new OkObjectResult("Cadastrado com algumas excessões: " + string.Join(';', seriesWithErro));
             return new OkObjectResult("Cadastrado com Sucesso");
         }
 

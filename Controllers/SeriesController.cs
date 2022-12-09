@@ -18,9 +18,9 @@ namespace Api.MyFlix.Controllers
 
         // GET: api/Series
         [HttpGet]
-        public async Task<ActionResult<Result>> GetSerie([FromQuery] string search = null,[FromQuery] int currentPage = 1, [FromQuery] int pageSize = 15, [FromQuery] string sortOrder = "title")
+        public async Task<ActionResult<Result>> GetSerie([FromQuery] string search = null, [FromQuery]string keys = null, [FromQuery] int currentPage = 1, [FromQuery] int pageSize = 15, [FromQuery] string sortOrder = "title")
         {
-            return await _seriesService.GetSerie(search, currentPage, pageSize, sortOrder);
+            return await _seriesService.GetSerie(search, keys,currentPage, pageSize, sortOrder);
         }
 
         // GET: api/Series/5
@@ -46,9 +46,15 @@ namespace Api.MyFlix.Controllers
 
         // POST: api/Series
         [HttpPost]
-        public async Task<ActionResult<Serie>> PostSerie(ParamSerie Serie)
+        public async Task<ActionResult<Serie>> PostSerie(ParamSerie paramSerie)
         {
-            return await _seriesService.PostSerie(Serie);
+            return await _seriesService.PostSerie(paramSerie);
+        }
+        // POST: api/Series/List
+        [HttpPost("List")]
+        public async Task<ActionResult<Serie>> PostSeries(List<ParamSerie> paramSeries)
+        {
+            return await _seriesService.PostSeries(paramSeries);
         }
 
         // DELETE: api/Series/5

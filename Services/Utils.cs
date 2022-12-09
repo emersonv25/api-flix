@@ -58,10 +58,26 @@ namespace Api.MyFlix.Services
         {
             string ext = System.IO.Path.GetExtension(url);
             string path = Path.Combine(imagePath, fileName + ext);
-            using (var client = new WebClient())
+            int tryCount = 0;
+        Download:
+            try
             {
-                client.DownloadFile(url, path);
+                using (var client = new WebClient())
+                {
+                    client.DownloadFile(url, path);
+                }
             }
+            catch
+            {
+                tryCount++;
+                if (tryCount <= 3)
+                {
+                    Thread.Sleep(2000);
+                    goto Download;
+                }
+                throw new Exception("Não foi Possível realizar o download da imagem: " + fileName);
+            }
+
             return fileName + ext;
         }
         #endregion
@@ -78,14 +94,14 @@ namespace Api.MyFlix.Services
             List<string> path = new List<string>();
             foreach (var file in files)
             {
-                
+
                 string fileName = (Guid.NewGuid().ToString() + GetFileFormat(file.FileName));
                 string directory = CreateFilePath(fileName, directoryPath);
                 #region Salva o arquivo em disco
                 byte[] bytesFile = ConvertFileInByteArray(file);
                 System.IO.File.WriteAllBytesAsync(directory, bytesFile);
-                
-                
+
+
                 using (var stream = new FileStream(directory, FileMode.Create))
                 {
                     file.CopyTo(stream);
@@ -134,7 +150,7 @@ namespace Api.MyFlix.Services
         }
         public static void DeleteFile(string path)
         {
-            if(File.Exists(path))
+            if (File.Exists(path))
             {
                 File.Delete(path);
             }

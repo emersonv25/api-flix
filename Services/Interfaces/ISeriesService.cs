@@ -10,11 +10,12 @@ namespace Api.MyFlix.Services.Interfaces
         /// Get all series
         /// </summary>
         /// <param name="search"></param>
+        /// <param name="keys"></param>
         /// <param name="currentPage"></param>
         /// <param name="pageSize"></param>
         /// <param name="sortOrder"></param>
         /// <returns></returns>
-        Task<ActionResult<Result>> GetSerie(string search, int currentPage, int pageSize, string sortOrder);
+        Task<ActionResult<Result>> GetSerie(string search, string keys, int currentPage, int pageSize, string sortOrder);
         /// <summary>
         /// Get serie by id
         /// </summary>
@@ -31,15 +32,21 @@ namespace Api.MyFlix.Services.Interfaces
         /// Update a serie
         /// </summary>
         /// <param name="id"></param>
-        /// <param name="Serie"></param>
+        /// <param name="serie"></param>
         /// <returns></returns>
-        Task<ActionResult> PutSerie(int id, Serie Serie);
+        Task<ActionResult> PutSerie(int id, Serie serie);
         /// <summary>
         /// Add one serie
         /// </summary>
-        /// <param name="Serie"></param>
+        /// <param name="paramSerie"></param>
         /// <returns></returns>
-        Task<ActionResult> PostSerie(ParamSerie Serie);
+        Task<ActionResult> PostSerie(ParamSerie paramSerie);
+        /// <summary>
+        /// Add list of serie
+        /// </summary>
+        /// <param name="paramSeries"></param>
+        /// <returns></returns>
+        Task<ActionResult> PostSeries(List<ParamSerie> paramSeries);
         /// <summary>
         /// Delete serie by id
         /// </summary>

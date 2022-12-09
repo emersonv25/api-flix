@@ -20,7 +20,8 @@ namespace Api.MyFlix.Models
         }
         public Episode(ParamEpisode paramEpisode, int seasonNum ,string SerieKey)
         {
-            EpisodeKey = $"{SerieKey}-temporada-{seasonNum}-episodio-{paramEpisode.EpisodeNum}";
+            //EpisodeKey = $"{SerieKey}-temporada-{seasonNum}-episodio-{paramEpisode.EpisodeNum}";
+            EpisodeKey = $"{SerieKey}{(seasonNum == 1 ? "" : "-" + seasonNum)}-episodio-{paramEpisode.EpisodeNum}";
             EpisodeNum = paramEpisode.EpisodeNum;
             Title = paramEpisode.Title;
             Description = paramEpisode.Description;

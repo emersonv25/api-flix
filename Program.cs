@@ -115,12 +115,17 @@ builder.Services.AddControllers().AddJsonOptions(x =>
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
+/*
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-    app.UseCors(x => x
+*/
+app.UseSwagger();
+app.UseSwaggerUI();
+
+app.UseCors(x => x
     .AllowAnyOrigin()
     .AllowAnyMethod()
     .AllowAnyHeader());

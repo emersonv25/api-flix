@@ -20,7 +20,8 @@ namespace Api.MyFlix.Controllers
         [HttpGet("{key}")]
         public async Task<ActionResult<ReturnEpisode>> GetEpisodeByKey(string key)
         {
-            return await _episodeService.GetEpisodeByKey(key);
+            var baseUrl = string.Concat(Request.Scheme, "://", Request.Host.ToUriComponent());
+            return await _episodeService.GetEpisodeByKey(key, baseUrl);
         }
         // POST: api/Episode
         [HttpPost]

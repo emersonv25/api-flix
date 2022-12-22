@@ -10,7 +10,7 @@ namespace Api.MyFlix.Services.Interfaces
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        Task<ActionResult<ReturnEpisode>> GetEpisodeByKey(string key);
+        Task<ActionResult<ReturnEpisode>> GetEpisodeByKey(string key, string baseUrl);
         /// <summary>
         /// ADD a new episode
         /// </summary>

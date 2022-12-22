@@ -5,7 +5,6 @@ using Api.MyFlix.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Immutable;
-using System.Drawing.Printing;
 
 namespace Api.MyFlix.Services
 {
@@ -20,7 +19,7 @@ namespace Api.MyFlix.Services
             _context = context;
 
         }
-        public async Task<ActionResult<Result>> GetSerie(string search, string keys,int currentPage, int pageSize, string sortOrder)
+        public async Task<ActionResult<Result>> GetSerie(string search, string keys,int currentPage, int pageSize, string sortOrder, string baseUrl)
         {
             #region pagination
             int count = 0;
@@ -111,7 +110,7 @@ namespace Api.MyFlix.Services
             {
                 foreach (var serie in series)
                 {
-                    returnSeries.Add(new ReturnSeries(GetImageUrlSerie(serie)));
+                    returnSeries.Add(new ReturnSeries(GetImageUrlSerie(serie, baseUrl)));
                 }
             }
 
@@ -133,7 +132,7 @@ namespace Api.MyFlix.Services
 
             return new NotFoundObjectResult("Nenhum resultado encontrado");
         }
-        public async Task<ActionResult<ReturnSerie>> GetSerieByKey(string key)
+        public async Task<ActionResult<ReturnSerie>> GetSerieByKey(string key, string baseUrl)
         {
             var serie = await _context.Serie
                 .Include(m => m.Categories)
@@ -144,7 +143,7 @@ namespace Api.MyFlix.Services
             {
                 serie.Views += 1;
                 _context.SaveChanges();
-                return new ReturnSerie(GetImageUrlSerie(serie));
+                return new ReturnSerie(GetImageUrlSerie(serie, baseUrl));
             }
 
             return new NotFoundObjectResult("Nenhum resultado encontrado");
@@ -343,9 +342,9 @@ namespace Api.MyFlix.Services
             episode.EpisodeImg = Utils.Download(episode.EpisodeImg, episode.EpisodeKey, _configuration["Directories:ImagesPath"]);
             return episode;
         }
-        private Serie GetImageUrlSerie(Serie serie)
+        private Serie GetImageUrlSerie(Serie serie, string baseUrl)
         {
-            serie.PosterImg = Utils.GetFileUrl(serie.PosterImg, _configuration["Directories:BaseUrl"], _configuration["Directories:ImagesPath"]);
+            serie.PosterImg = Utils.GetFileUrl(serie.PosterImg, baseUrl, _configuration["Directories:ImagesPath"]);
             if (serie.Seasons is not null)
             {
                 int isS = 0;
@@ -354,7 +353,7 @@ namespace Api.MyFlix.Services
                     int iE = 0;
                     foreach (var episode in season.Episodes)
                     {
-                        serie.Seasons[isS].Episodes[iE].EpisodeImg = Utils.GetFileUrl(serie.Seasons[isS].Episodes[iE].EpisodeImg, _configuration["Directories:BaseUrl"], _configuration["Directories:ImagesPath"]);
+                        serie.Seasons[isS].Episodes[iE].EpisodeImg = Utils.GetFileUrl(serie.Seasons[isS].Episodes[iE].EpisodeImg, baseUrl, _configuration["Directories:ImagesPath"]);
                         iE++;
                     }
                     isS++;

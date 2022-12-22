@@ -4,6 +4,7 @@ using Api.MyFlix.Models.Object;
 using Api.MyFlix.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Policy;
 
 namespace Api.MyFlix.Services
 {
@@ -18,7 +19,7 @@ namespace Api.MyFlix.Services
             _configuration = configuration;
         }
 
-        public async Task<ActionResult<ReturnEpisode>> GetEpisodeByKey(string key)
+        public async Task<ActionResult<ReturnEpisode>> GetEpisodeByKey(string key, string baseUrl)
         {
             var episode = await _context.Espisode
                 .Include(s => s.Season)
@@ -28,7 +29,8 @@ namespace Api.MyFlix.Services
 
             if (episode is not null)
             {
-                var returnEpisode = new ReturnEpisode(GetImageUrlEpisode(episode));
+                var returnEpisode = new ReturnEpisode(episode);
+                returnEpisode.EpisodeImg = GetImageUrlEpisode(episode, baseUrl);
                 returnEpisode.SerieKey = episode.Season.Serie.SerieKey;
                 returnEpisode.SeasonKey = episode.Season.SeasonKey;
                 if(episode.Season.Episodes.Any(e => e.EpisodeNum == episode.EpisodeNum + 1))
@@ -76,11 +78,11 @@ namespace Api.MyFlix.Services
             await _context.SaveChangesAsync();
             return new OkObjectResult("Cadastrado com Sucesso");
         }
-        private Episode GetImageUrlEpisode(Episode episode)
+        private string GetImageUrlEpisode(Episode episode, string baseUrl)
         {
-            episode.EpisodeImg = Utils.GetFileUrl(episode.EpisodeImg, _configuration["Directories:BaseUrl"], _configuration["Directories:ImagesPath"]);
+            string imgUrl = Utils.GetFileUrl(episode.EpisodeImg, baseUrl, _configuration["Directories:ImagesPath"]);
 
-            return episode;
+            return imgUrl;
         }
     }
 }

@@ -20,7 +20,8 @@ namespace Api.MyFlix.Controllers
         [HttpGet]
         public async Task<ActionResult<Result>> GetSerie([FromQuery] string search = null, [FromQuery]string keys = null, [FromQuery] int currentPage = 1, [FromQuery] int pageSize = 15, [FromQuery] string sortOrder = "title")
         {
-            return await _seriesService.GetSerie(search, keys,currentPage, pageSize, sortOrder);
+            var baseUrl = string.Concat(Request.Scheme,"://",Request.Host.ToUriComponent());
+            return await _seriesService.GetSerie(search, keys,currentPage, pageSize, sortOrder, baseUrl);
         }
 
         // GET: api/Series/5
@@ -34,7 +35,8 @@ namespace Api.MyFlix.Controllers
         [HttpGet("{key}")]
         public async Task<ActionResult<ReturnSerie>> GetSerieByKey(string key)
         {
-            return await _seriesService.GetSerieByKey(key);
+            var baseUrl = string.Concat(Request.Scheme, "://", Request.Host.ToUriComponent());
+            return await _seriesService.GetSerieByKey(key, baseUrl);
         }
 
         // PUT: api/Series/5

@@ -58,7 +58,6 @@ namespace Api.MyFlix.Data
             modelBuilder.Entity<Episode>().Property(e => e.EpisodeKey).IsRequired();
             modelBuilder.Entity<Episode>().Property(e => e.EpisodeVideo).IsRequired(true);
             modelBuilder.Entity<Episode>().HasOne(e => e.Season).WithMany(s => s.Episodes).HasForeignKey(e => e.SeasonId);
-            modelBuilder.Entity<Episode>().Property(e => e.IsIframe).HasDefaultValueSql("1");
 
         }
     }

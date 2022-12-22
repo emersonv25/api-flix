@@ -15,7 +15,7 @@ namespace Api.MyFlix.Services.Interfaces
         /// <param name="pageSize"></param>
         /// <param name="sortOrder"></param>
         /// <returns></returns>
-        Task<ActionResult<Result>> GetSerie(string search, string keys, int currentPage, int pageSize, string sortOrder);
+        Task<ActionResult<Result>> GetSerie(string search, string keys, int currentPage, int pageSize, string sortOrder, string baseUrl);
         /// <summary>
         /// Get serie by id
         /// </summary>
@@ -27,7 +27,7 @@ namespace Api.MyFlix.Services.Interfaces
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        Task<ActionResult<ReturnSerie>> GetSerieByKey(string key);
+        Task<ActionResult<ReturnSerie>> GetSerieByKey(string key, string baseUrl);
         /// <summary>
         /// Update a serie
         /// </summary>

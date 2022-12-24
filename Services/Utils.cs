@@ -71,6 +71,7 @@ namespace Api.MyFlix.Services
                 }
                 */
                 using var httpClient = new HttpClient();
+                httpClient.DefaultRequestHeaders.Add("User-Agent", "User-Agent");
                 var streamGot = await httpClient.GetStreamAsync(url);
                 await using var fileStream = new FileStream(path, FileMode.Create, FileAccess.Write);
                 streamGot.CopyTo(fileStream);

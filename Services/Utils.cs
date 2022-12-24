@@ -70,17 +70,10 @@ namespace Api.MyFlix.Services
                     client.DownloadFile(url, path);
                 }
                 */
-                HttpClient http = new HttpClient();
-
-                var res = await http.GetAsync(url);
-
-                byte[] bytes = await res.Content.ReadAsByteArrayAsync();
-
-                using (Image image = Image.FromStream(new MemoryStream(bytes)))
-                {
-                    image.Save(path + '/' + fileName + ext);  // Or Png
-                }
-
+                using var httpClient = new HttpClient();
+                var streamGot = await httpClient.GetStreamAsync(url);
+                await using var fileStream = new FileStream(path, FileMode.Create, FileAccess.Write);
+                streamGot.CopyTo(fileStream);
             }
             catch(Exception ex)
             {

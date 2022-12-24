@@ -181,7 +181,7 @@ namespace Api.MyFlix.Services
                             var newEpisode = existSeason.Episodes.FirstOrDefault(e => e.EpisodeKey.Equals(episode.EpisodeKey));
                             if (newEpisode == null)
                             {
-                                var addEpisode = SaveImagesOfEpisode(episode);
+                                var addEpisode = await SaveImagesOfEpisodeAsync(episode);
                                 serieExist.Seasons.First(s => s.SeasonKey == season.SeasonKey).Episodes.Add(addEpisode);
                                 serieExist.LatestRelease = DateTime.Now;
                             }
@@ -197,7 +197,7 @@ namespace Api.MyFlix.Services
             }
             else
             {
-                newSerie = SaveImagesOfSerie(newSerie);
+                newSerie = await SaveImagesOfSerieAsync(newSerie);
                 _context.Serie.Add(newSerie);
             }
 
@@ -243,7 +243,7 @@ namespace Api.MyFlix.Services
                                     var newEpisode = existSeason.Episodes.FirstOrDefault(e => e.EpisodeKey.Equals(episode.EpisodeKey));
                                     if (newEpisode == null)
                                     {
-                                        var addEpisode = SaveImagesOfEpisode(episode);
+                                        var addEpisode = await SaveImagesOfEpisodeAsync(episode);
                                         serieExist.Seasons.First(s => s.SeasonKey == season.SeasonKey).Episodes.Add(addEpisode);
                                     }
                                 }
@@ -256,7 +256,7 @@ namespace Api.MyFlix.Services
                     }
                     else
                     {
-                        newSerie = SaveImagesOfSerie(newSerie);
+                        newSerie =await SaveImagesOfSerieAsync(newSerie);
                         _context.Serie.Add(newSerie);
                     }
                     await _context.SaveChangesAsync();
@@ -321,25 +321,25 @@ namespace Api.MyFlix.Services
         {
             return _context.Serie.Any(e => e.SerieKey == key);
         }
-        private Serie SaveImagesOfSerie(Serie serie)
+        private async Task<Serie> SaveImagesOfSerieAsync(Serie serie)
         {
-            serie.PosterImg = Utils.Download(serie.PosterImg, serie.SerieKey, _configuration["Directories:ImagesPath"]);
+            serie.PosterImg = await Utils.Download(serie.PosterImg, serie.SerieKey, _configuration["Directories:ImagesPath"]);
             int iS = 0;
             foreach (var season in serie.Seasons)
             {
                 int iE = 0;
                 foreach (var episode in season.Episodes)
                 {
-                    serie.Seasons[iS].Episodes[iE].EpisodeImg = Utils.Download(serie.Seasons[iS].Episodes[iE].EpisodeImg, serie.Seasons[iS].Episodes[iE].EpisodeKey, _configuration["Directories:ImagesPath"]);
+                    serie.Seasons[iS].Episodes[iE].EpisodeImg = await Utils.Download(serie.Seasons[iS].Episodes[iE].EpisodeImg, serie.Seasons[iS].Episodes[iE].EpisodeKey, _configuration["Directories:ImagesPath"]);
                     iE++;
                 }
                 iS++;
             }
             return serie;
         }
-        private Episode SaveImagesOfEpisode(Episode episode)
+        private async Task<Episode> SaveImagesOfEpisodeAsync(Episode episode)
         {
-            episode.EpisodeImg = Utils.Download(episode.EpisodeImg, episode.EpisodeKey, _configuration["Directories:ImagesPath"]);
+            episode.EpisodeImg = await Utils.Download(episode.EpisodeImg, episode.EpisodeKey, _configuration["Directories:ImagesPath"]);
             return episode;
         }
         private Serie GetImageUrlSerie(Serie serie, string baseUrl)

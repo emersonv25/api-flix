@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -9,6 +10,7 @@ using System.Security.Policy;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace Api.MyFlix.Services
 {
@@ -54,7 +56,7 @@ namespace Api.MyFlix.Services
             return str.Trim();
         }
         #region Download de arquivos
-        public static string Download(string url, string fileName, string imagePath)
+        public async static Task<string> Download(string url, string fileName, string imagePath)
         {
             string ext = System.IO.Path.GetExtension(url);
             string path = Path.Combine(imagePath, fileName + ext);
@@ -62,10 +64,23 @@ namespace Api.MyFlix.Services
         Download:
             try
             {
+                /*
                 using (var client = new WebClient())
                 {
                     client.DownloadFile(url, path);
                 }
+                */
+                HttpClient http = new HttpClient();
+
+                var res = await http.GetAsync(url);
+
+                byte[] bytes = await res.Content.ReadAsByteArrayAsync();
+
+                using (Image image = Image.FromStream(new MemoryStream(bytes)))
+                {
+                    image.Save(path + '/' + fileName + ext);  // Or Png
+                }
+
             }
             catch(Exception ex)
             {

@@ -64,17 +64,20 @@ namespace Api.MyFlix.Services
         Download:
             try
             {
-                /*
+
                 using (var client = new WebClient())
                 {
+                    client.Headers.Add("User-Agent", "Other");
                     client.DownloadFile(url, path);
                 }
-                */
+
+                /*
                 using var httpClient = new HttpClient();
-                httpClient.DefaultRequestHeaders.Add("User-Agent", "User-Agent");
+                httpClient.DefaultRequestHeaders.Add("user-agent", "Apache/2.4.34 (Ubuntu) OpenSSL/1.1.1 (internal dummy connection)");
                 var streamGot = await httpClient.GetStreamAsync(url);
                 await using var fileStream = new FileStream(path, FileMode.Create, FileAccess.Write);
                 streamGot.CopyTo(fileStream);
+                */
             }
             catch(Exception ex)
             {

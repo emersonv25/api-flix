@@ -140,6 +140,11 @@ app.MapControllers();
 
 app.UseStaticFiles();
 
-
+// Aplicar migração ao rodar o projeto
+using (var scope = app.Services.CreateScope())
+{
+    var dataContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    dataContext.Database.Migrate();
+}
 
 app.Run();

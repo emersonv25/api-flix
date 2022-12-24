@@ -67,7 +67,7 @@ namespace Api.MyFlix.Services
                     client.DownloadFile(url, path);
                 }
             }
-            catch
+            catch(Exception ex)
             {
                 tryCount++;
                 if (tryCount <= 3)
@@ -75,7 +75,7 @@ namespace Api.MyFlix.Services
                     Thread.Sleep(2000);
                     goto Download;
                 }
-                throw new Exception("Não foi Possível realizar o download da imagem: " + fileName);
+                throw new Exception("Não foi Possível realizar o download da imagem: " + fileName + "Erro: " + ex.Message);
             }
 
             return fileName + ext;

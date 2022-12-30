@@ -60,6 +60,11 @@ namespace Api.MyFlix.Services
         {
             string ext = System.IO.Path.GetExtension(urlOrBase64);
             string path = Path.Combine(imagePath, fileName + ext);
+
+            bool isFolderExists = System.IO.Directory.Exists(imagePath);
+            if (!isFolderExists)
+                System.IO.Directory.CreateDirectory(imagePath);
+
             int tryCount = 0;
         Upload:
             try

@@ -182,7 +182,6 @@ namespace Api.MyFlix.Services
             var fileUrl = imagesPath
                 .Replace("wwwroot", "")
                 .Replace("\\", "");
-            var test = Path.Combine(baseUrl, fileUrl, filePath);
             return (baseUrl + fileUrl + "/" + filePath);
         }
 

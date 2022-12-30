@@ -78,7 +78,8 @@ namespace Api.MyFlix.Services
                         await using var fileStream = new FileStream(path, FileMode.Create, FileAccess.Write);
                         streamGot.CopyTo(fileStream);
                     }
-                }   
+                    return fileName + ext;
+                }
             }
             catch (Exception ex)
             {
@@ -90,8 +91,6 @@ namespace Api.MyFlix.Services
                 }
                 throw new Exception("Não foi Possível realizar o download/upload da imagem: " + fileName + "Erro: " + ex.Message);
             }
-
-            return fileName + ext;
         }
         #endregion
         #region Manipulação de arquivos

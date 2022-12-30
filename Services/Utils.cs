@@ -182,8 +182,8 @@ namespace Api.MyFlix.Services
             var fileUrl = imagesPath
                 .Replace("wwwroot", "")
                 .Replace("\\", "");
-
-            return (baseUrl + "/" + fileUrl + "/" + filePath);
+            var test = Path.Combine(baseUrl, fileUrl, filePath);
+            return (baseUrl + fileUrl + "/" + filePath);
         }
 
         public static byte[] ConvertFileInByteArray(IFormFile file)

@@ -55,32 +55,30 @@ namespace Api.MyFlix.Services
 
             return str.Trim();
         }
-        #region Download de arquivos
-        public async static Task<string> Download(string url, string fileName, string imagePath)
+        #region Upload de arquivos
+        public async static Task<string> Upload(string urlOrBase64, string fileName, string imagePath)
         {
-            string ext = System.IO.Path.GetExtension(url);
+            string ext = System.IO.Path.GetExtension(urlOrBase64);
             string path = Path.Combine(imagePath, fileName + ext);
             int tryCount = 0;
-        Download:
+        Upload:
             try
             {
-                /*
-                using (var client = new WebClient())
+                try
                 {
-                    client.Headers.Add(HttpRequestHeader.UserAgent.ToString(), "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.89 Safari/537.36.");
-                    client.DownloadFile(url, path);
+                    var extBase64 = GetFileExtension(urlOrBase64);
+                    File.WriteAllBytes(path + "." + extBase64, Convert.FromBase64String(urlOrBase64));
+                    return fileName + "." + extBase64;
                 }
-                */
-
-                using (var client = new HttpClient())
+                catch
                 {
-                    //client.DefaultRequestHeaders.Add(HttpRequestHeader.UserAgent.ToString(), "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.89 Safari/537.36.");
-                    var streamGot = await client.GetStreamAsync(url);
-                    await using var fileStream = new FileStream(path, FileMode.Create, FileAccess.Write);
-                    streamGot.CopyTo(fileStream);
-                }
-
-                
+                    using (var client = new HttpClient())
+                    {
+                        var streamGot = await client.GetStreamAsync(urlOrBase64);
+                        await using var fileStream = new FileStream(path, FileMode.Create, FileAccess.Write);
+                        streamGot.CopyTo(fileStream);
+                    }
+                }   
             }
             catch (Exception ex)
             {
@@ -88,15 +86,44 @@ namespace Api.MyFlix.Services
                 if (tryCount <= 3)
                 {
                     Thread.Sleep(2000);
-                    goto Download;
+                    goto Upload;
                 }
-                throw new Exception("Não foi Possível realizar o download da imagem: " + fileName + "Erro: " + ex.Message);
+                throw new Exception("Não foi Possível realizar o download/upload da imagem: " + fileName + "Erro: " + ex.Message);
             }
 
             return fileName + ext;
         }
         #endregion
         #region Manipulação de arquivos
+        public static string GetFileExtension(string base64String)
+        {
+            var data = base64String.Substring(0, 5);
+
+            switch (data.ToUpper())
+            {
+                case "IVBOR":
+                    return "png";
+                case "/9J/4":
+                    return "jpg";
+                case "AAAAF":
+                    return "mp4";
+                case "JVBER":
+                    return "pdf";
+                case "AAABA":
+                    return "ico";
+                case "UMFYI":
+                    return "rar";
+                case "E1XYD":
+                    return "rtf";
+                case "U1PKC":
+                    return "txt";
+                case "MQOWM":
+                case "77U/M":
+                    return "srt";
+                default:
+                    return string.Empty;
+            }
+        }
         public static string GetFileFormat(string fullFileName)
         {
             var format = fullFileName.Split(".").Last();

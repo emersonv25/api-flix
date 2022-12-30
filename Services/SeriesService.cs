@@ -323,14 +323,14 @@ namespace Api.MyFlix.Services
         }
         private async Task<Serie> SaveImagesOfSerieAsync(Serie serie)
         {
-            serie.PosterImg = await Utils.Download(serie.PosterImg, serie.SerieKey, _configuration["Directories:ImagesPath"]);
+            serie.PosterImg = await Utils.Upload(serie.PosterImg, serie.SerieKey, _configuration["Directories:ImagesPath"]);
             int iS = 0;
             foreach (var season in serie.Seasons)
             {
                 int iE = 0;
                 foreach (var episode in season.Episodes)
                 {
-                    serie.Seasons[iS].Episodes[iE].EpisodeImg = await Utils.Download(serie.Seasons[iS].Episodes[iE].EpisodeImg, serie.Seasons[iS].Episodes[iE].EpisodeKey, _configuration["Directories:ImagesPath"]);
+                    serie.Seasons[iS].Episodes[iE].EpisodeImg = await Utils.Upload(serie.Seasons[iS].Episodes[iE].EpisodeImg, serie.Seasons[iS].Episodes[iE].EpisodeKey, _configuration["Directories:ImagesPath"]);
                     iE++;
                 }
                 iS++;
@@ -339,7 +339,7 @@ namespace Api.MyFlix.Services
         }
         private async Task<Episode> SaveImagesOfEpisodeAsync(Episode episode)
         {
-            episode.EpisodeImg = await Utils.Download(episode.EpisodeImg, episode.EpisodeKey, _configuration["Directories:ImagesPath"]);
+            episode.EpisodeImg = await Utils.Upload(episode.EpisodeImg, episode.EpisodeKey, _configuration["Directories:ImagesPath"]);
             return episode;
         }
         private Serie GetImageUrlSerie(Serie serie, string baseUrl)

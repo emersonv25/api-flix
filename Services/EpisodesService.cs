@@ -21,7 +21,7 @@ namespace Api.MyFlix.Services
 
         public async Task<ActionResult<ReturnEpisode>> GetEpisodeByKey(string key, string baseUrl)
         {
-            var episode = await _context.Espisode
+            var episode = await _context.Episode
                 .Include(s => s.Season)
                 .ThenInclude(s => s.Serie)
                 .Include(s => s.Season.Episodes)
@@ -72,7 +72,7 @@ namespace Api.MyFlix.Services
             }
             var newEpisode = new Episode(episode, seasonNum, serieKey);
             newEpisode.SeasonId = season.SeasonId;
-            _context.Espisode.Add(newEpisode);
+            _context.Episode.Add(newEpisode);
             var serie = await _context.Serie.FirstOrDefaultAsync(s => s.SerieKey == serieKey);
             serie.LatestRelease = DateTime.Now;
             await _context.SaveChangesAsync();

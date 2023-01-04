@@ -72,17 +72,66 @@ namespace Api.MyFlix.Services
             }
             var newEpisode = new Episode(episode, seasonNum, serieKey);
             newEpisode.SeasonId = season.SeasonId;
+
+            if (EpisodeExistsByKey(newEpisode.EpisodeKey))
+            {
+                return new BadRequestObjectResult($"O Episódio com a key {newEpisode.EpisodeKey} já existe");
+            }
+
             _context.Episode.Add(newEpisode);
             var serie = await _context.Serie.FirstOrDefaultAsync(s => s.SerieKey == serieKey);
             serie.LatestRelease = DateTime.Now;
+            
             await _context.SaveChangesAsync();
             return new OkObjectResult("Cadastrado com Sucesso");
         }
+        public async Task<ActionResult> PostEpisodes(string serieKey, int seasonNum, List<ParamEpisode> episodes)
+        {
+            if (serieKey is null || seasonNum < 1 || episodes is null || episodes.Count == 0)
+            {
+                return new BadRequestObjectResult("Preencha os parâmetros");
+            }
+
+            var season = _context.Season.Where(s => s.Serie.SerieKey == serieKey && s.SeasonNum == seasonNum)
+                .Include(s => s.Episodes)
+                .FirstOrDefault();
+
+            if (season is null)
+            {
+                return new NotFoundObjectResult("Série/Temporada não encontrada");
+            }
+
+            foreach(var episode in episodes)
+            {
+                if (season.Episodes.Any(e => e.EpisodeNum == episode.EpisodeNum))
+                {
+                    return new BadRequestObjectResult($"O Episódio nº {episode.EpisodeNum} já existe");
+                }
+                var newEpisode = new Episode(episode, seasonNum, serieKey);
+                newEpisode.SeasonId = season.SeasonId;
+
+                if (!EpisodeExistsByKey(newEpisode.EpisodeKey))
+                {
+                    _context.Episode.Add(newEpisode);
+                }
+            }
+
+            var serie = await _context.Serie.FirstOrDefaultAsync(s => s.SerieKey == serieKey);
+            serie.LatestRelease = DateTime.Now;
+
+            await _context.SaveChangesAsync();
+            return new OkObjectResult("Cadastrado com Sucesso");
+        }
+
         private string GetImageUrlEpisode(Episode episode, string baseUrl)
         {
             string imgUrl = Utils.GetFileUrl(episode.EpisodeImg, baseUrl, _configuration["Directories:ImagesPath"]);
 
             return imgUrl;
+        }
+        private bool EpisodeExistsByKey(string key)
+        {
+            return _context.Episode.Any(e => e.EpisodeKey == key);
         }
     }
 }

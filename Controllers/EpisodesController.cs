@@ -29,6 +29,12 @@ namespace Api.MyFlix.Controllers
         {
             return await _episodeService.PostEpisode(serieKey, seasonNum, episode);
         }
+        // POST: api/Episode
+        [HttpPost("list")]
+        public async Task<ActionResult> PostEpisodes(string serieKey, int seasonNum, List<ParamEpisode> episodes)
+        {
+            return await _episodeService.PostEpisodes(serieKey, seasonNum, episodes);
+        }
 
     }
 }

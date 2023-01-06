@@ -137,10 +137,15 @@ namespace Api.MyFlix.Services
             var serie = await _context.Serie
                 .Include(m => m.Categories)
                 .Include(m => m.Seasons)
-                .ThenInclude(s => s.Episodes).FirstOrDefaultAsync(m => m.SerieKey == key);
-
+                .ThenInclude(s => s.Episodes)
+                .FirstOrDefaultAsync(m => m.SerieKey == key);
+            
             if (serie is not null)
             {
+                foreach(var season in serie.Seasons)
+                {
+                    season.Episodes = season.Episodes.OrderBy(e => e.EpisodeNum).ToList();
+                }
                 serie.Views += 1;
                 _context.SaveChanges();
                 return new ReturnSerie(GetImageUrlSerie(serie, baseUrl));

@@ -92,35 +92,52 @@ namespace Api.MyFlix.Services
                 return new BadRequestObjectResult("Preencha os parâmetros");
             }
 
+            var serie = await _context.Serie.Include(s => s.Seasons).FirstOrDefaultAsync(s => s.SerieKey == serieKey);
+            if(serie is null)
+            {
+                return new NotFoundObjectResult("Série não encontrada");
+            }
+
             var season = _context.Season.Where(s => s.Serie.SerieKey == serieKey && s.SeasonNum == seasonNum)
                 .Include(s => s.Episodes)
                 .FirstOrDefault();
 
             if (season is null)
             {
-                return new NotFoundObjectResult("Série/Temporada não encontrada");
+                var newSeason = new Season(new ParamSeason { SeasonNum = seasonNum, Episodes = episodes }, serieKey);
+                for (var i = 0; i < newSeason.Episodes.Count; i++)
+                {
+                    newSeason.Episodes[i] = await SaveImagesOfEpisodeAsync(newSeason.Episodes[i]);
+                }
+                serie.Seasons.Add(newSeason);
             }
-
-            foreach(var episode in episodes)
+            else
             {
-                if (season.Episodes.Any(e => e.EpisodeNum == episode.EpisodeNum))
+                foreach (var episode in episodes)
                 {
-                    return new BadRequestObjectResult($"O Episódio nº {episode.EpisodeNum} já existe");
-                }
-                var newEpisode = new Episode(episode, seasonNum, serieKey);
-                newEpisode.SeasonId = season.SeasonId;
-
-                if (!EpisodeExistsByKey(newEpisode.EpisodeKey))
-                {
-                    _context.Episode.Add(newEpisode);
+                    if (season.Episodes.Any(e => e.EpisodeNum == episode.EpisodeNum))
+                    {
+                        return new BadRequestObjectResult($"O Episódio nº {episode.EpisodeNum} já existe");
+                    }
+                    var newEpisode = new Episode(episode, seasonNum, serieKey);
+                    newEpisode.SeasonId = season.SeasonId;
+                    if (!EpisodeExistsByKey(newEpisode.EpisodeKey))
+                    {
+                        newEpisode = await SaveImagesOfEpisodeAsync(newEpisode);
+                        _context.Episode.Add(newEpisode);
+                    }
                 }
             }
 
-            var serie = await _context.Serie.FirstOrDefaultAsync(s => s.SerieKey == serieKey);
             serie.LatestRelease = DateTime.Now;
 
             await _context.SaveChangesAsync();
             return new OkObjectResult("Cadastrado com Sucesso");
+        }
+        private async Task<Episode> SaveImagesOfEpisodeAsync(Episode episode)
+        {
+            episode.EpisodeImg = await Utils.Upload(episode.EpisodeImg, episode.EpisodeKey, _configuration["Directories:ImagesPath"]);
+            return episode;
         }
 
         private string GetImageUrlEpisode(Episode episode, string baseUrl)

@@ -148,6 +148,20 @@ namespace Api.MyFlix.Services
 
             return new NotFoundObjectResult("Nenhum resultado encontrado");
         }
+        public async Task<ActionResult<ReturnSerie>> GetSerieByTitle(string title, string baseUrl)
+        {
+            var serie = await _context.Serie
+                .Include(c => c.Categories)
+                .Include(m => m.Seasons)
+                .ThenInclude(s => s.Episodes).FirstOrDefaultAsync(m => m.Title == title);
+
+            if (serie is not null)
+            {
+                return new ReturnSerie(GetImageUrlSerie(serie, baseUrl));
+            }
+
+            return new NotFoundObjectResult("Nenhum resultado encontrado");
+        }
         public async Task<ActionResult> PostSerie(ParamSerie paramSerie)
         {
             var categories = _context.Category.Where(i => paramSerie.Categories.Contains(i.Name.ToUpper())).ToList();
@@ -170,7 +184,6 @@ namespace Api.MyFlix.Services
             {
                 //return new BadRequestObjectResult($"{newSerie.SerieKey} já existe");
                 var serieExist = await _context.Serie.Include(s => s.Seasons).ThenInclude(s => s.Episodes).FirstOrDefaultAsync(s => s.SerieKey == newSerie.SerieKey);
-                var newSeason = new Season();
                 foreach (var season in newSerie.Seasons)
                 {
                     var existSeason = serieExist.Seasons.FirstOrDefault(s => s.SeasonKey.Equals(season.SeasonKey));
@@ -189,6 +202,10 @@ namespace Api.MyFlix.Services
                     }
                     else
                     {
+                        for(var i = 0; i < season.Episodes.Count; i++)
+                        {
+                            season.Episodes[i] = await SaveImagesOfEpisodeAsync(season.Episodes[i]);
+                        }
                         serieExist.Seasons.Add(season);
                         serieExist.LatestRelease = DateTime.Now;
 

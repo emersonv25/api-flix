@@ -39,6 +39,13 @@ namespace Api.MyFlix.Controllers
             return await _seriesService.GetSerieByKey(key, baseUrl);
         }
 
+        // GET: api/Series/title/one piece
+        [HttpGet("title/{title}")]
+        public async Task<ActionResult<ReturnSerie>> GetSerieByTitle(string title)
+        {
+            var baseUrl = string.Concat(Request.Scheme, "://", Request.Host.ToUriComponent());
+            return await _seriesService.GetSerieByTitle(title, baseUrl);
+        }
         // PUT: api/Series/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutSerie(int id, Serie Serie)

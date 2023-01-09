@@ -15,8 +15,7 @@ namespace Api.MyFlix.Models
             EpisodeNum = returnEpisode.EpisodeNum;  
             Title = returnEpisode.Title;    
             Description = returnEpisode.Description;
-            EpisodeVideo = string.Join(";", returnEpisode.EpisodeVideo);
-            IsIframe = returnEpisode.IsIframe;
+            EpisodeVideos = returnEpisode.EpisodeVideos.Select(e => new EpisodeVideo(e.OptionName, e.VideoUrl, e.IsIframe)).ToList();
         }
         public Episode(ParamEpisode paramEpisode, int seasonNum ,string SerieKey)
         {
@@ -25,9 +24,9 @@ namespace Api.MyFlix.Models
             EpisodeNum = paramEpisode.EpisodeNum;
             Title = paramEpisode.Title;
             Description = paramEpisode.Description;
-            EpisodeVideo = string.Join(";", paramEpisode.EpisodeVideo);
+            EpisodeVideos = paramEpisode.EpisodeVideos.Select(e => new EpisodeVideo(e.OptionName, e.VideoUrl, e.IsIframe)).ToList();
             EpisodeImg = paramEpisode.EpisodeImg;
-            IsIframe= paramEpisode.IsIframe;
+            ReleasedDate = paramEpisode.ReleasedDate;
         }
 
         [Key]
@@ -36,11 +35,11 @@ namespace Api.MyFlix.Models
         public int EpisodeNum { get; set; }
         public string Title { get; set; }
         public string  Description { get; set; }
-        public string EpisodeVideo { get; set; }
+        public List<EpisodeVideo> EpisodeVideos { get; set; }
         public string EpisodeImg { get; set; }
+        public string ReleasedDate { get; set; }
         public DateTime CreatedDate { get; set; } = DateTime.Now;
         public int Views { get; set; }
-        public bool IsIframe { get; set; } = true;
 
         [ForeignKey("Season")]
         public int SeasonId { get; set; }

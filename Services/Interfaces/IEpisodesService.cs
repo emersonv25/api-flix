@@ -12,14 +12,6 @@ namespace Api.MyFlix.Services.Interfaces
         /// <returns></returns>
         Task<ActionResult<ReturnEpisode>> GetEpisodeByKey(string key, string baseUrl);
         /// <summary>
-        /// ADD a new episode
-        /// </summary>
-        /// <param name="serieKey"></param>
-        /// <param name="seasonNum"></param>
-        /// <param name="episode"></param>
-        /// <returns></returns>
-        Task<ActionResult> PostEpisode(string serieKey, int seasonNum, ParamEpisode episode);
-        /// <summary>
         /// ADD a list of episodes
         /// </summary>
         /// <param name="serieKey"></param>

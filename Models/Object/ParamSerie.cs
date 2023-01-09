@@ -6,6 +6,7 @@
         public string Description { get; set; }
         public string PosterImg { get; set; }
         public string ReleasedDate { get; set; }
+        public string Rating { get; set; }  
         public List<ParamSeason> Seasons { get; set; }
         public List<string> Categories { get; set; }
     }

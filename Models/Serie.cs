@@ -9,13 +9,14 @@ namespace Api.MyFlix.Models
     public class Serie
     {
         public Serie() { }
-        public Serie(string title, string description, string posterImg, string releasedDate, List<ParamSeason> seasons, List<Category> categories)
+        public Serie(string title, string description, string posterImg, string releasedDate, string rating ,List<ParamSeason> seasons, List<Category> categories)
         {
             SerieKey = Utils.ReplaceSpecialChar(title.ToLower()).Replace(' ', '-');
             Title = title;
             Description = description;
             PosterImg = posterImg;
             ReleasedDate = releasedDate;
+            Rating = rating;
             Seasons = seasons.Select(s => new Season(s, SerieKey)).ToList();
             Categories = categories;
         }
@@ -26,6 +27,7 @@ namespace Api.MyFlix.Models
         public string Description { get; set; }
         public string PosterImg { get; set; }
         public string ReleasedDate { get; set; }
+        public string Rating { get; set; }
         public DateTime CreatedDate { get; set; } = DateTime.Now;
         public DateTime LatestRelease { get; set; } = DateTime.Now;
         public int Views { get; set; }

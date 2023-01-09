@@ -15,6 +15,7 @@ namespace Api.MyFlix.Data
         public DbSet<Category> Category { get; set; }
         public DbSet<Season> Season { get; set; }
         public DbSet<Episode> Episode { get; set; }
+        public DbSet<EpisodeVideo> EpisodeVideos { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -56,8 +57,13 @@ namespace Api.MyFlix.Data
             modelBuilder.Entity<Episode>().Property(e => e.Title).IsRequired(true);
             modelBuilder.Entity<Episode>().HasIndex(e => e.EpisodeKey).IsUnique(true);
             modelBuilder.Entity<Episode>().Property(e => e.EpisodeKey).IsRequired();
-            modelBuilder.Entity<Episode>().Property(e => e.EpisodeVideo).IsRequired(true);
             modelBuilder.Entity<Episode>().HasOne(e => e.Season).WithMany(s => s.Episodes).HasForeignKey(e => e.SeasonId);
+
+            // EpisodeVideo
+            modelBuilder.Entity<EpisodeVideo>().HasKey(v => v.VideoId);
+            modelBuilder.Entity<EpisodeVideo>().Property(v => v.VideoUrl).IsRequired(true);
+            modelBuilder.Entity<EpisodeVideo>().HasOne(v => v.Episode).WithMany(e => e.EpisodeVideos).HasForeignKey(v => v.EpisodeId);
+
 
         }
     }

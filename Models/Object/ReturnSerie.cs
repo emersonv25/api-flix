@@ -11,6 +11,7 @@
             Description = Serie.Description;
             PosterImg = Serie.PosterImg;    
             ReleasedDate = Serie.ReleasedDate;
+            Rating = Serie.Rating;
             Seasons = Serie.Seasons.Select(x => new ReturnSeason(x)).ToList();
             Categories = Serie.Categories.Select(x => x.Name).ToList();
         }
@@ -20,6 +21,7 @@
         public string Description { get; set; }
         public string PosterImg { get; set; }
         public string ReleasedDate { get; set; }
+        public string Rating { get; set; }
         public List<ReturnSeason> Seasons { get; set; }
         public List<string> Categories { get; set; }
     }

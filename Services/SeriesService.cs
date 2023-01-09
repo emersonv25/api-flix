@@ -137,7 +137,7 @@ namespace Api.MyFlix.Services
             var serie = await _context.Serie
                 .Include(m => m.Categories)
                 .Include(m => m.Seasons)
-                .ThenInclude(s => s.Episodes)
+                .ThenInclude(s => s.Episodes).ThenInclude(e => e.EpisodeVideos)
                 .FirstOrDefaultAsync(m => m.SerieKey == key);
             
             if (serie is not null)
@@ -181,6 +181,7 @@ namespace Api.MyFlix.Services
                 paramSerie.Description,
                 paramSerie.PosterImg,
                 paramSerie.ReleasedDate,
+                paramSerie.Rating,
                 paramSerie.Seasons,
                 categories
             );
@@ -246,6 +247,7 @@ namespace Api.MyFlix.Services
                         paramSerie.Description,
                         paramSerie.PosterImg,
                         paramSerie.ReleasedDate,
+                        paramSerie.Rating,
                         paramSerie.Seasons,
                         categories
                     );

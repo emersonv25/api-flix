@@ -158,7 +158,9 @@ namespace Api.MyFlix.Services
             var serie = await _context.Serie
                 .Include(c => c.Categories)
                 .Include(m => m.Seasons)
-                .ThenInclude(s => s.Episodes).FirstOrDefaultAsync(m => m.Title == title);
+                .ThenInclude(s => s.Episodes)
+                .ThenInclude(e => e.EpisodeVideos)
+                .FirstOrDefaultAsync(m => m.Title == title);
 
             if (serie is not null)
             {

@@ -19,5 +19,11 @@ namespace Api.MyFlix.Services.Interfaces
         /// <param name="episodes"></param>
         /// <returns></returns>
         Task<ActionResult> PostEpisodes(string serieKey, int seasonNum, List<ParamEpisode> episodes);
+        /// <summary>
+        /// Delete episode
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<ActionResult> DeleteEpisode(int id);
     }
 }

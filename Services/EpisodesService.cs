@@ -106,7 +106,19 @@ namespace Api.MyFlix.Services
             episode.EpisodeImg = await Utils.Upload(episode.EpisodeImg, episode.EpisodeKey, _configuration["Directories:ImagesPath"]);
             return episode;
         }
+        public async Task<ActionResult> DeleteEpisode(int id)
+        {
+            var episode = await _context.Episode.FindAsync(id);
+            if (episode is null)
+            {
+                return new NotFoundObjectResult("Não encontrado");
+            }
 
+            _context.Episode.Remove(episode);
+            await _context.SaveChangesAsync();
+
+            return new OkObjectResult("Deletado com sucesso");
+        }
         private string GetImageUrlEpisode(Episode episode, string baseUrl)
         {
             string imgUrl = Utils.GetFileUrl(episode.EpisodeImg, baseUrl, _configuration["Directories:ImagesPath"]);

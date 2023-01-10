@@ -1,7 +1,5 @@
 ﻿using Api.MyFlix.Models.Object;
-using Api.MyFlix.Services;
 using Api.MyFlix.Services.Interfaces;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.MyFlix.Controllers
@@ -28,6 +26,12 @@ namespace Api.MyFlix.Controllers
         public async Task<ActionResult> PostEpisodes(string serieKey, int seasonNum, List<ParamEpisode> episodes)
         {
             return await _episodeService.PostEpisodes(serieKey, seasonNum, episodes);
+        }
+        // DELETE: api/Episode
+        [HttpDelete()]
+        public async Task<ActionResult> DeleteEpisode(int id)
+        {
+            return await _episodeService.DeleteEpisode(id);
         }
 
     }

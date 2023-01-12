@@ -4,6 +4,7 @@ using Api.MyFlix.Models.Object;
 using Api.MyFlix.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Drawing.Printing;
 using System.Security.Policy;
 
 namespace Api.MyFlix.Services
@@ -18,7 +19,30 @@ namespace Api.MyFlix.Services
             _context = context;
             _configuration = configuration;
         }
+        public async Task<ActionResult<Result>> GetLastEpisodes(int currentPage, int pageSize, string baseUrl)
+        {
+            #region pagination
+            int count = await _context.Episode.CountAsync();
+            int skip = (currentPage - 1) * pageSize;
+            int take = pageSize;
+            #endregion
 
+            var episodes = await _context.Episode.OrderByDescending(e => e.CreatedDate).Skip(skip).Take(take).ToListAsync();
+
+            var returnEpisodes = new List<ReturnEpisode>();
+
+            if (episodes is not null)
+            {
+                foreach (var episode in episodes)
+                {
+                    episode.EpisodeImg = GetImageUrlEpisode(episode, baseUrl);
+                    returnEpisodes.Add(new ReturnEpisode(episode));
+                }
+            }
+
+            Result result = new Result(returnEpisodes.ToList<dynamic>(), count, currentPage, pageSize);
+            return result;
+        }
         public async Task<ActionResult<ReturnEpisode>> GetEpisodeByKey(string key, string baseUrl)
         {
             var episode = await _context.Episode

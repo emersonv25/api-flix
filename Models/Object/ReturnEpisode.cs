@@ -10,7 +10,7 @@
             Title = episode.Title;
             Description = episode.Description;
             ReleasedDate = episode.ReleasedDate;
-            EpisodeVideos = episode.EpisodeVideos.Select(e => new ReturnEpisodeVideo(e.OptionName, e.VideoUrl, e.IsIframe)).ToList(); ;
+            EpisodeVideos = episode.EpisodeVideos != null ? episode.EpisodeVideos.Select(e => new ReturnEpisodeVideo(e.OptionName, e.VideoUrl, e.IsIframe)).ToList() : null ;
             EpisodeImg = episode.EpisodeImg;
             CreatedDate = episode.CreatedDate;
             Views = episode.Views;   
@@ -21,7 +21,7 @@
         public string Title { get; set; }
         public string Description { get; set; }
         public string ReleasedDate { get; set; }
-        public List<ReturnEpisodeVideo> EpisodeVideos { get; set; }
+        public List<ReturnEpisodeVideo> EpisodeVideos { get; set; } 
         public string EpisodeImg { get; set; }
         public string SerieKey { get; set; }
         public string SeasonKey { get; set; }

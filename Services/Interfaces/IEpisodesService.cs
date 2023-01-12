@@ -12,6 +12,14 @@ namespace Api.MyFlix.Services.Interfaces
         /// <returns></returns>
         Task<ActionResult<ReturnEpisode>> GetEpisodeByKey(string key, string baseUrl);
         /// <summary>
+        /// Get last episodes uploaded 
+        /// </summary>
+        /// <param name="currentPage"></param>
+        /// <param name="pageSize"></param>
+        /// <param name="baseUrl"></param>
+        /// <returns></returns>
+        Task<ActionResult<Result>> GetLastEpisodes(int currentPage, int pageSize, string baseUrl);
+        /// <summary>
         /// ADD a list of episodes
         /// </summary>
         /// <param name="serieKey"></param>

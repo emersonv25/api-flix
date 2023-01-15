@@ -13,9 +13,10 @@ namespace Api.MyFlix.Services.Interfaces
         /// <param name="keys"></param>
         /// <param name="currentPage"></param>
         /// <param name="pageSize"></param>
+        /// <param name="orderBy"></param>
         /// <param name="sortOrder"></param>
         /// <returns></returns>
-        Task<ActionResult<Result>> GetSerie(string search, string keys, int currentPage, int pageSize, string sortOrder, string baseUrl);
+        Task<ActionResult<Result>> GetSerie(string search, string keys, int currentPage, int pageSize, string orderBy, string sortOrder, string baseUrl);
         /// <summary>
         /// Get serie by id
         /// </summary>

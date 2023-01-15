@@ -19,7 +19,7 @@ namespace Api.MyFlix.Services
             _context = context;
 
         }
-        public async Task<ActionResult<Result>> GetSerie(string search, string keys,int currentPage, int pageSize, string sortOrder, string baseUrl)
+        public async Task<ActionResult<Result>> GetSerie(string search, string keys,int currentPage, int pageSize, string orderBy, string sortOrder, string baseUrl)
         {
             #region pagination
             int count = 0;
@@ -29,27 +29,23 @@ namespace Api.MyFlix.Services
 
             #region sort
             string columnOrder = "Title";
-            bool isAsc = true;
-            switch (sortOrder)
+            bool isAsc = sortOrder == "desc" ? false : true;
+            switch (orderBy)
             {
                 case "title":
                     columnOrder = "Title";
                     break;
                 case "latest_release":
                     columnOrder = "LatestRelease";
-                    isAsc = false;
                     break;
                 case "created_date":
                     columnOrder = "CreatedDate";
-                    isAsc = false;
                     break;
                 case "released_date":
                     columnOrder = "ReleasedDate";
-                    isAsc = false;
                     break;
                 case "most_view":
                     columnOrder = "Views";
-                    isAsc = false;
                     break;
             }
             #endregion

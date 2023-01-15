@@ -18,10 +18,10 @@ namespace Api.MyFlix.Controllers
 
         // GET: api/Series
         [HttpGet]
-        public async Task<ActionResult<Result>> GetSerie([FromQuery] string search = null, [FromQuery]string keys = null, [FromQuery] int currentPage = 1, [FromQuery] int pageSize = 15, [FromQuery] string sortOrder = "title")
+        public async Task<ActionResult<Result>> GetSerie([FromQuery] string search = null, [FromQuery]string keys = null, [FromQuery] int currentPage = 1, [FromQuery] int pageSize = 15, [FromQuery] string orderBy = "title", [FromQuery] string sortOrder = "asc")
         {
             var baseUrl = string.Concat(Request.Scheme,"://",Request.Host.ToUriComponent());
-            return await _seriesService.GetSerie(search, keys,currentPage, pageSize, sortOrder, baseUrl);
+            return await _seriesService.GetSerie(search, keys,currentPage, pageSize, orderBy, sortOrder, baseUrl);
         }
 
         // GET: api/Series/5

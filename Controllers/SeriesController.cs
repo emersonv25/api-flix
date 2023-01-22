@@ -59,7 +59,7 @@ namespace Api.MyFlix.Controllers
         [Authorize(Roles = "admin")]
         public async Task<IActionResult> PutSerieBySerieKey(string serieKey, [FromBody] ParamSerieUpdate paramSerie)
         {
-            return await _seriesService.PutSerieBySerieKey(serieKey, paramSerie);
+            return await _seriesService.PatchSerie(serieKey, paramSerie);
         }
         // POST: api/Series
         [HttpPost]

@@ -320,7 +320,7 @@ namespace Api.MyFlix.Services
 
             return new OkObjectResult("Editado com sucesso");
         }
-        public async Task<ActionResult> PutSerieBySerieKey(string serieKey, ParamSerieUpdate paramSerie)
+        public async Task<ActionResult> PatchSerie(string serieKey, ParamSerieUpdate paramSerie)
         {
 
             var serieDb = await _context.Serie.Include(s => s.Categories).FirstOrDefaultAsync(s => s.SerieKey == serieKey);
@@ -330,24 +330,24 @@ namespace Api.MyFlix.Services
                 return new NotFoundResult();
             }
 
-            if(serieDb.Title != paramSerie.Title)
+            if(serieDb.Title != paramSerie.Title && !string.IsNullOrWhiteSpace(paramSerie.Title))
             {
                 serieDb.Title = paramSerie.Title;
             }
-            if(serieDb.Description != paramSerie.Description)
+            if(serieDb.Description != paramSerie.Description && !string.IsNullOrWhiteSpace(paramSerie.Description))
             {
                 serieDb.Description = paramSerie.Description;
             }
-            if(serieDb.PosterImg!= paramSerie.PosterImg)
+            if(serieDb.PosterImg != paramSerie.PosterImg && !string.IsNullOrWhiteSpace(paramSerie.PosterImg))
             {
                 serieDb.PosterImg= paramSerie.PosterImg;
                 await SaveImageOfSeriePosterOnlyAsync(serieDb);
             }
-            if(serieDb.Rating != paramSerie.Rating)
+            if(serieDb.Rating != paramSerie.Rating && !string.IsNullOrWhiteSpace(paramSerie.Rating))
             {
                 serieDb.Rating = paramSerie.Rating;   
             }
-            if(serieDb.ReleasedDate != paramSerie.ReleasedDate)
+            if(serieDb.ReleasedDate != paramSerie.ReleasedDate && !string.IsNullOrWhiteSpace(paramSerie.ReleasedDate))
             {
                 serieDb.ReleasedDate = paramSerie.ReleasedDate;
             }

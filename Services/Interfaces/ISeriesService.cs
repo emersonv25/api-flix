@@ -46,9 +46,9 @@ namespace Api.MyFlix.Services.Interfaces
         /// Update some information of one serie by seriekey
         /// </summary>
         /// <param name="serieKey"></param>
-        /// <param name="serie"></param>
+        /// <param name="paramSerie"></param>
         /// <returns></returns>
-        Task<ActionResult> PutSerieBySerieKey(string serieKey, ParamSerieUpdate paramSerie);
+        Task<ActionResult> PatchSerie(string serieKey, ParamSerieUpdate paramSerie);
         /// <summary>
         /// Add one serie
         /// </summary>

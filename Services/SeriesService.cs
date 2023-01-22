@@ -278,7 +278,7 @@ namespace Api.MyFlix.Services
                     }
                     else
                     {
-                        newSerie =await SaveImagesOfSerieAsync(newSerie);
+                        newSerie = await SaveImagesOfSerieAsync(newSerie);
                         _context.Serie.Add(newSerie);
                     }
                     await _context.SaveChangesAsync();
@@ -320,7 +320,49 @@ namespace Api.MyFlix.Services
 
             return new OkObjectResult("Editado com sucesso");
         }
+        public async Task<ActionResult> PutSerieBySerieKey(string serieKey, ParamSerieUpdate paramSerie)
+        {
 
+            var serieDb = await _context.Serie.Include(s => s.Categories).FirstOrDefaultAsync(s => s.SerieKey == serieKey);
+
+            if (!SerieExistsByKey(serieKey))
+            {
+                return new NotFoundResult();
+            }
+
+            if(serieDb.Title != paramSerie.Title)
+            {
+                serieDb.Title = paramSerie.Title;
+            }
+            if(serieDb.Description != paramSerie.Description)
+            {
+                serieDb.Description = paramSerie.Description;
+            }
+            if(serieDb.PosterImg!= paramSerie.PosterImg)
+            {
+                serieDb.PosterImg= paramSerie.PosterImg;
+                await SaveImageOfSeriePosterOnlyAsync(serieDb);
+            }
+            if(serieDb.Rating != paramSerie.Rating)
+            {
+                serieDb.Rating = paramSerie.Rating;   
+            }
+            if(serieDb.ReleasedDate != paramSerie.ReleasedDate)
+            {
+                serieDb.ReleasedDate = paramSerie.ReleasedDate;
+            }
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return new BadRequestObjectResult("Não foi possível salvar as alterações no banco de dados");
+            }
+
+            return new OkObjectResult("Editado com sucesso");
+        }
         public async Task<ActionResult> DeleteSerie(int id)
         {
             var serie = await _context.Serie.FindAsync(id);
@@ -342,6 +384,11 @@ namespace Api.MyFlix.Services
         private bool SerieExistsByKey(string key)
         {
             return _context.Serie.Any(e => e.SerieKey == key);
+        }
+        private async Task<Serie> SaveImageOfSeriePosterOnlyAsync(Serie serie)
+        {
+            serie.PosterImg = await Utils.Upload(serie.PosterImg, serie.SerieKey, _configuration["Directories:ImagesPath"]);
+            return serie;
         }
         private async Task<Serie> SaveImagesOfSerieAsync(Serie serie)
         {

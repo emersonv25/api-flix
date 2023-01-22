@@ -2,7 +2,8 @@
 using Api.MyFlix.Models;
 using Api.MyFlix.Services.Interfaces;
 using Api.MyFlix.Models.Object;
-
+using System.Data;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Api.MyFlix.Controllers
 {
@@ -48,19 +49,28 @@ namespace Api.MyFlix.Controllers
         }
         // PUT: api/Series/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutSerie(int id, Serie Serie)
+        [Authorize(Roles = "admin")]
+        public async Task<IActionResult> PutSerie(int id, Serie serie)
         {
-            return await _seriesService.PutSerie(id, Serie);
+            return await _seriesService.PutSerie(id, serie);
         }
-
+        // PATCH: api/Series/one-piece
+        [HttpPatch("{serieKey}")]
+        [Authorize(Roles = "admin")]
+        public async Task<IActionResult> PutSerieBySerieKey(string serieKey, [FromBody] ParamSerieUpdate paramSerie)
+        {
+            return await _seriesService.PutSerieBySerieKey(serieKey, paramSerie);
+        }
         // POST: api/Series
         [HttpPost]
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult<Serie>> PostSerie(ParamSerie paramSerie)
         {
             return await _seriesService.PostSerie(paramSerie);
         }
         // POST: api/Series/List
         [HttpPost("List")]
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult<Serie>> PostSeries(List<ParamSerie> paramSeries)
         {
             return await _seriesService.PostSeries(paramSeries);
@@ -68,6 +78,7 @@ namespace Api.MyFlix.Controllers
 
         // DELETE: api/Series/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> DeleteSerie(int id)
         {
             return await _seriesService.DeleteSerie(id);    

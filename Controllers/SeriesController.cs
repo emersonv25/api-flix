@@ -39,7 +39,12 @@ namespace Api.MyFlix.Controllers
             var baseUrl = string.Concat(Request.Scheme, "://", Request.Host.ToUriComponent());
             return await _seriesService.GetSerieByKey(key, baseUrl);
         }
-
+        // GET: api/Series/addview/one-piece
+        [HttpGet("addview/{key}")]
+        public async Task<ActionResult> AddView(string key)
+        {
+            return await _seriesService.AddView(key);
+        }
         // GET: api/Series/title/one piece
         [HttpGet("title/{title}")]
         public async Task<ActionResult<ReturnSerie>> GetSerieByTitle(string title)

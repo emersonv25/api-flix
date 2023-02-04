@@ -67,5 +67,11 @@ namespace Api.MyFlix.Services.Interfaces
         /// <param name="id"></param>
         /// <returns></returns>
         Task<ActionResult> DeleteSerie(int id);
+        /// <summary>
+        /// Add view in serie
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        Task<ActionResult> AddView(string key);
     }
 }

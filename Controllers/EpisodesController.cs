@@ -1,4 +1,5 @@
 ﻿using Api.MyFlix.Models.Object;
+using Api.MyFlix.Services;
 using Api.MyFlix.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -22,6 +23,12 @@ namespace Api.MyFlix.Controllers
         {
             var baseUrl = string.Concat(Request.Scheme, "://", Request.Host.ToUriComponent());
             return await _episodeService.GetEpisodeByKey(key, baseUrl);
+        }
+        // GET: api/Episode/addview/one-piece-episode-1
+        [HttpGet("addview/{key}")]
+        public async Task<ActionResult> AddView(string key)
+        {
+            return await _episodeService.AddView(key);
         }
         // GET: api/Episode/Last?currentPage=1&pageSize=25
         [HttpGet("Last")]

@@ -76,6 +76,19 @@ namespace Api.MyFlix.Services
             }
             return new NotFoundObjectResult("Nenhum resultado encontrado");
         }
+        public async Task<ActionResult> AddView(string key)
+        {
+            var episode = await _context.Episode.FirstOrDefaultAsync(m => m.EpisodeKey == key);
+
+            if (episode is not null)
+            {
+                episode.Views += 1;
+                _context.SaveChanges();
+                return new OkResult();
+            }
+
+            return new NotFoundResult();
+        }
         public async Task<ActionResult> PostEpisodes(string serieKey, int seasonNum, List<ParamEpisode> episodes)
         {
             if (serieKey is null || seasonNum < 1 || episodes is null || episodes.Count == 0)

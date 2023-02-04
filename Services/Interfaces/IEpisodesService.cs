@@ -33,5 +33,11 @@ namespace Api.MyFlix.Services.Interfaces
         /// <param name="id"></param>
         /// <returns></returns>
         Task<ActionResult> DeleteEpisode(int id);
+        /// <summary>
+        /// Add view in episode
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        Task<ActionResult> AddView(string key);
     }
 }

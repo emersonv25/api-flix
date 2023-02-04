@@ -14,6 +14,7 @@
             Rating = Serie.Rating;
             Seasons = Serie.Seasons.Select(x => new ReturnSeason(x)).ToList();
             Categories = Serie.Categories.Select(x => x.Name).ToList();
+            Views = Serie.Views;
         }
 
         public string SerieKey { get; set; }
@@ -24,6 +25,7 @@
         public string Rating { get; set; }
         public List<ReturnSeason> Seasons { get; set; }
         public List<string> Categories { get; set; }
+        public int Views { get; set; }
     }
     public class ReturnSeries
     {

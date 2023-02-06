@@ -142,8 +142,8 @@ namespace Api.MyFlix.Services
                 {
                     season.Episodes = season.Episodes.OrderBy(e => e.EpisodeNum).ToList();
                 }
-                serie.Views += 1;
-                _context.SaveChanges();
+                //serie.Views += 1;
+                //_context.SaveChanges();
                 return new ReturnSerie(GetImageUrlSerie(serie, baseUrl));
             }
 

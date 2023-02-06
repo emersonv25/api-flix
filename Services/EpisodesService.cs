@@ -70,8 +70,8 @@ namespace Api.MyFlix.Services
                         .Where(e => e.EpisodeNum == episode.EpisodeNum - 1)
                         .FirstOrDefault().EpisodeKey;
                 }
-                episode.Views += 1;
-                _context.SaveChanges();
+                //episode.Views += 1;
+               //_context.SaveChanges();
                 return returnEpisode;
             }
             return new NotFoundObjectResult("Nenhum resultado encontrado");

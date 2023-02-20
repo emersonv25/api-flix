@@ -149,6 +149,17 @@ namespace Api.MyFlix.Services
 
             return new NotFoundObjectResult("Nenhum resultado encontrado");
         }
+        public async Task<ActionResult<string[]>> GetSerieKeyList()
+        {
+            var series = await _context.Serie.Select(s => s.SerieKey).ToArrayAsync();
+
+            if (series is not null && series.Length > 0)
+            {
+                return series;
+            }
+
+            return new NotFoundResult();
+        }
         public async Task<ActionResult> AddView(string key)
         {
             var serie = await _context.Serie.FirstOrDefaultAsync(m => m.SerieKey == key);

@@ -36,6 +36,12 @@ namespace Api.MyFlix.Services.Interfaces
         /// <returns></returns>
         Task<ActionResult<ReturnSerie>> GetSerieByTitle(string title, string baseUrl);
         /// <summary>
+        /// Get a list of all series keys
+        /// </summary>
+        /// <returns></returns>
+        Task<ActionResult<string[]>> GetSerieKeyList();
+
+        /// <summary>
         /// Update a serie
         /// </summary>
         /// <param name="id"></param>

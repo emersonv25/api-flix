@@ -52,6 +52,12 @@ namespace Api.MyFlix.Controllers
             var baseUrl = string.Concat(Request.Scheme, "://", Request.Host.ToUriComponent());
             return await _seriesService.GetSerieByTitle(title, baseUrl);
         }
+        // GET: api/Series/getSerieKeyList
+        [HttpGet("getSerieKeyList")]
+        public async Task<ActionResult<string[]>> GetSerieKeyList()
+        {
+            return await _seriesService.GetSerieKeyList();
+        }
         // PUT: api/Series/5
         [HttpPut("{id}")]
         [Authorize(Roles = "admin")]

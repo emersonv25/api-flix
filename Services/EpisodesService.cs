@@ -46,10 +46,10 @@ namespace Api.MyFlix.Services
         public async Task<ActionResult<ReturnEpisode>> GetEpisodeByKey(string key, string baseUrl)
         {
             var episode = await _context.Episode
+                .Include( e => e.EpisodeVideos)
                 .Include(s => s.Season)
                 .ThenInclude(s => s.Serie)
                 .Include(s => s.Season.Episodes)
-                .ThenInclude(e => e.EpisodeVideos)
                 .FirstOrDefaultAsync(m => m.EpisodeKey == key);
 
             if (episode is not null)

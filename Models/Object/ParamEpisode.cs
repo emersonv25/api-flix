@@ -8,7 +8,6 @@
         public string ReleasedDate { get; set; }
         public List<ParamEpisodeVideo> EpisodeVideos { get; set; }
         public string EpisodeImg { get; set; }
-        public bool IsIframe { get; set; } = true;
     }
     public class ParamEpisodeVideo
     {

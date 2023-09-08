@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Npgsql;
 using System.Text;
 using System.Text.Json.Serialization;
 
@@ -86,8 +87,19 @@ else if (db == "mysql")
     builder.Services.AddDbContext<AppDbContext>(options =>
     {
         options.UseMySql(mySqlConnection, ServerVersion.AutoDetect(mySqlConnection));
+
         //options.UseLazyLoadingProxies();
     });
+}
+else if(db == "postgresql")
+{
+    string postgreSqlConnection = builder.Configuration.GetConnectionString("PostgreSqlConnection");
+    builder.Services.AddDbContext<AppDbContext>(options =>
+    {
+        options.UseNpgsql(postgreSqlConnection);
+        //options.UseLazyLoadingProxies();
+    });
+    AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 }
 
 // AUTHENTICATION
@@ -141,10 +153,11 @@ app.MapControllers();
 app.UseStaticFiles();
 
 // Aplicar migração ao rodar o projeto
+/*
 using (var scope = app.Services.CreateScope())
 {
     var dataContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     dataContext.Database.Migrate();
 }
-
+*/
 app.Run();

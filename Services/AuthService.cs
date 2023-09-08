@@ -81,11 +81,11 @@ namespace Api.MyFlix.Services
                 }
                 if (userEdited.Enabled.HasValue)
                 {
-                    user.Enabled = userEdited.Enabled;
+                    user.Enabled = userEdited.Enabled.Value;
                 }
                 if (userEdited.Admin.HasValue)
                 {
-                    user.Admin = userEdited.Admin;
+                    user.Admin = userEdited.Admin.Value;
                 }
                 await _context.SaveChangesAsync();
             }

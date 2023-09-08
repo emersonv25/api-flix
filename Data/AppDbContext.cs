@@ -26,8 +26,8 @@ namespace Api.MyFlix.Data
             modelBuilder.Entity<User>().HasIndex(u => u.Username).IsUnique(true);
             modelBuilder.Entity<User>().HasIndex(u => u.Email).IsUnique(true);
             modelBuilder.Entity<User>().Property(u => u.Password).IsRequired();
-            modelBuilder.Entity<User>().Property(u => u.Enabled).HasDefaultValueSql("1").IsRequired();
-            modelBuilder.Entity<User>().Property(u => u.Admin).HasDefaultValueSql("0").IsRequired();
+            modelBuilder.Entity<User>().Property(u => u.Enabled).IsRequired();
+            modelBuilder.Entity<User>().Property(u => u.Admin).IsRequired();
             modelBuilder.Entity<User>().Property(u => u.Email).HasMaxLength(256).IsRequired();
             modelBuilder.Entity<User>().Property(u => u.CreatedAt).IsRequired();
             modelBuilder.Entity<User>()

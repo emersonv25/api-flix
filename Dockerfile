@@ -19,4 +19,9 @@ RUN dotnet publish "Api.MyFlix.csproj" -c Release -o /app/publish /p:UseAppHost=
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+
+
+VOLUME /app/wwwroot/uploads
+
+
 ENTRYPOINT ["dotnet", "Api.MyFlix.dll"]
